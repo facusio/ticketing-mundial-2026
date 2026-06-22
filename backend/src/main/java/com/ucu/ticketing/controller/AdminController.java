@@ -3,7 +3,7 @@ package com.ucu.ticketing.controller;
 import com.ucu.ticketing.dto.request.*;
 import com.ucu.ticketing.dto.response.EstadioResponse;
 import com.ucu.ticketing.dto.response.EventoResponse;
-import com.ucu.ticketing.entity.Fase;
+import com.ucu.ticketing.model.Fase;
 import com.ucu.ticketing.service.AdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

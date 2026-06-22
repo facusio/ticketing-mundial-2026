@@ -2,6 +2,7 @@ package com.ucu.ticketing.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,8 +72,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrity(DataIntegrityViolationException ex,
                                                               HttpServletRequest request) {
-        String mensaje = extraerMensajeTrigger(ex);
+        String mensaje = extraerMensajePsql(ex);
         log.warn("DataIntegrityViolation en {}: {}", request.getRequestURI(), ex.getMessage());
+        return build(HttpStatus.CONFLICT, mensaje, request.getRequestURI());
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<ErrorResponse> handleDataAccess(DataAccessException ex,
+                                                           HttpServletRequest request) {
+        String mensaje = extraerMensajePsql(ex);
+        log.warn("DataAccessException en {}: {}", request.getRequestURI(), ex.getMessage());
         return build(HttpStatus.CONFLICT, mensaje, request.getRequestURI());
     }
 
@@ -82,12 +91,11 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor", request.getRequestURI());
     }
 
-    private String extraerMensajeTrigger(DataIntegrityViolationException ex) {
+    private String extraerMensajePsql(Throwable ex) {
         Throwable cause = ex.getCause();
         while (cause != null) {
             if (cause.getClass().getName().contains("PSQLException")) {
                 String msg = cause.getMessage();
-                // Los triggers de PostgreSQL lanzan mensajes en la excepción con prefijo "ERROR:"
                 if (msg != null && msg.contains("ERROR:")) {
                     int idx = msg.indexOf("ERROR:");
                     return msg.substring(idx + 6).trim().split("\n")[0];

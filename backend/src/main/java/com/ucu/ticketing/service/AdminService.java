@@ -3,9 +3,11 @@ package com.ucu.ticketing.service;
 import com.ucu.ticketing.dto.request.*;
 import com.ucu.ticketing.dto.response.EstadioResponse;
 import com.ucu.ticketing.dto.response.EventoResponse;
-import com.ucu.ticketing.entity.*;
 import com.ucu.ticketing.exception.RecursoNoEncontradoException;
 import com.ucu.ticketing.exception.ReglaNegocioException;
+import com.ucu.ticketing.model.Estadio;
+import com.ucu.ticketing.model.Evento;
+import com.ucu.ticketing.model.Fase;
 import com.ucu.ticketing.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -31,22 +33,24 @@ public class AdminService {
 
     @Transactional
     public EstadioResponse crearEstadio(Long adminId, EstadioRequest req) {
-        AdminPais admin = adminPaisRepository.findById(adminId)
+        adminPaisRepository.findById(adminId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Admin no encontrado"));
 
+        Long estadioId = estadioRepository.insert(adminId, req.getNombre(), req.getPais(), req.getCiudad());
+
         Estadio estadio = Estadio.builder()
-                .adminPais(admin)
+                .id(estadioId)
+                .adminId(adminId)
                 .nombre(req.getNombre())
-                .ciudad(req.getCiudad())
                 .pais(req.getPais())
+                .ciudad(req.getCiudad())
                 .build();
-        estadioRepository.save(estadio);
 
         return toEstadioResponse(estadio);
     }
 
     public List<EstadioResponse> getEstadios(Long adminId) {
-        return estadioRepository.findByAdminPaisUsuarioId(adminId)
+        return estadioRepository.findByAdminId(adminId)
                 .stream()
                 .map(this::toEstadioResponse)
                 .collect(Collectors.toList());
@@ -57,54 +61,54 @@ public class AdminService {
         Estadio estadio = estadioRepository.findById(estadioId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Estadio no encontrado"));
 
-        if (!estadio.getAdminPais().getUsuarioId().equals(adminId)) {
+        if (!estadio.getAdminId().equals(adminId)) {
             throw new ReglaNegocioException("Este estadio no te pertenece");
         }
 
-        Sector sector = Sector.builder()
-                .estadio(estadio)
-                .codigo(req.getCodigo())
-                .capacidadMaxima(req.getCapacidadMaxima())
-                .build();
-        sectorRepository.save(sector);
+        sectorRepository.insert(estadioId, req.getCodigo(), req.getCapacidadMaxima());
     }
 
     @Transactional
     public EventoResponse crearEvento(Long adminId, EventoRequest req) {
-        AdminPais admin = adminPaisRepository.findById(adminId)
+        adminPaisRepository.findById(adminId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Admin no encontrado"));
 
         Estadio estadio = estadioRepository.findById(req.getEstadioId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Estadio no encontrado"));
 
-        if (!estadio.getAdminPais().getUsuarioId().equals(adminId)) {
+        if (!estadio.getAdminId().equals(adminId)) {
             throw new ReglaNegocioException("Este estadio no te pertenece");
         }
 
         Fase fase = faseRepository.findById(req.getFaseId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Fase no encontrada"));
 
-        Evento evento = Evento.builder()
-                .estadio(estadio)
-                .admin(admin)
-                .fase(fase)
-                .fechaHora(req.getFechaHora())
-                .equipoLocal(req.getEquipoLocal())
-                .equipoVisitante(req.getEquipoVisitante())
-                .build();
-
+        Long eventoId;
         try {
-            eventoRepository.save(evento);
-            eventoRepository.flush();
+            eventoId = eventoRepository.insert(
+                    estadio.getId(), adminId, fase.getId(),
+                    req.getEquipoLocal(), req.getEquipoVisitante(), req.getFechaHora());
         } catch (DataIntegrityViolationException e) {
             throw new ReglaNegocioException("Ya existe un evento en ese estadio que se superpone con el horario indicado");
         }
+
+        Evento evento = Evento.builder()
+                .id(eventoId)
+                .estadioId(estadio.getId())
+                .adminId(adminId)
+                .faseId(fase.getId())
+                .equipoLocal(req.getEquipoLocal())
+                .equipoVisitante(req.getEquipoVisitante())
+                .fechaHora(req.getFechaHora())
+                .estadio(estadio)
+                .fase(fase)
+                .build();
 
         return toEventoResponse(evento);
     }
 
     public List<EventoResponse> getEventos(Long adminId) {
-        return eventoRepository.findByEstadioAdminPaisUsuarioId(adminId)
+        return eventoRepository.findByAdminId(adminId)
                 .stream()
                 .map(this::toEventoResponse)
                 .collect(Collectors.toList());
@@ -112,26 +116,22 @@ public class AdminService {
 
     @Transactional
     public Fase crearFase(FaseRequest req) {
-        Fase fase = Fase.builder()
+        Long id = faseRepository.insert(req.getNombre(), req.getOrden());
+        return Fase.builder()
+                .id(id)
                 .nombre(req.getNombre())
                 .orden(req.getOrden())
                 .build();
-        return faseRepository.save(fase);
     }
 
     @Transactional
     public void definirPrecio(Long faseId, FaseSectorRequest req) {
-        Fase fase = faseRepository.findById(faseId)
+        faseRepository.findById(faseId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Fase no encontrada"));
-        Sector sector = sectorRepository.findById(req.getSectorId())
+        sectorRepository.findById(req.getSectorId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Sector no encontrado"));
 
-        FaseSector fs = faseSectorRepository.findByFaseIdAndSectorId(faseId, req.getSectorId())
-                .orElseGet(FaseSector::new);
-        fs.setFase(fase);
-        fs.setSector(sector);
-        fs.setPrecio(req.getPrecio());
-        faseSectorRepository.save(fs);
+        faseSectorRepository.upsert(faseId, req.getSectorId(), req.getPrecio());
     }
 
     public List<Map<String, Object>> getRankingEventos() {

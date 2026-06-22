@@ -1,9 +1,30 @@
 package com.ucu.ticketing.repository;
 
-import com.ucu.ticketing.entity.Funcionario;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.ucu.ticketing.model.Funcionario;
+import com.ucu.ticketing.rowmapper.FuncionarioRowMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
-public interface FuncionarioRepository extends JpaRepository<Funcionario, Long> {
+@RequiredArgsConstructor
+public class FuncionarioRepository {
+
+    private final JdbcTemplate jdbc;
+
+    public Optional<Funcionario> findById(Long usuarioId) {
+        String sql = "SELECT usuario_id, numero_legajo FROM ticketing.funcionario WHERE usuario_id = ?";
+        return jdbc.query(sql, new FuncionarioRowMapper(), usuarioId).stream().findFirst();
+    }
+
+    public Optional<Funcionario> findByLegajo(String numeroLegajo) {
+        String sql = "SELECT usuario_id, numero_legajo FROM ticketing.funcionario WHERE numero_legajo = ?";
+        return jdbc.query(sql, new FuncionarioRowMapper(), numeroLegajo).stream().findFirst();
+    }
+
+    public void insert(Long usuarioId, String numeroLegajo) {
+        jdbc.update("INSERT INTO ticketing.funcionario (usuario_id, numero_legajo) VALUES (?, ?)", usuarioId, numeroLegajo);
+    }
 }

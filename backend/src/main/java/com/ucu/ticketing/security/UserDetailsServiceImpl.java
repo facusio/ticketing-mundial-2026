@@ -1,6 +1,6 @@
 package com.ucu.ticketing.security;
 
-import com.ucu.ticketing.entity.Usuario;
+import com.ucu.ticketing.model.Usuario;
 import com.ucu.ticketing.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,7 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return User.builder()
                 .username(usuario.getMail())
                 .password(usuario.getPassword())
-                .authorities(List.of(new SimpleGrantedAuthority("ROLE_" + usuario.getRol().name())))
+                .authorities(List.of(new SimpleGrantedAuthority("ROLE_" + usuario.getRol())))
                 .build();
     }
 }

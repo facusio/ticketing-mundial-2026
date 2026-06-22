@@ -3,9 +3,11 @@ package com.ucu.ticketing.service;
 import com.ucu.ticketing.dto.request.LoginRequest;
 import com.ucu.ticketing.dto.request.RegisterRequest;
 import com.ucu.ticketing.dto.response.LoginResponse;
-import com.ucu.ticketing.entity.*;
 import com.ucu.ticketing.exception.ReglaNegocioException;
-import com.ucu.ticketing.repository.*;
+import com.ucu.ticketing.model.Usuario;
+import com.ucu.ticketing.repository.TelefonoRepository;
+import com.ucu.ticketing.repository.UsuarioGeneralRepository;
+import com.ucu.ticketing.repository.UsuarioRepository;
 import com.ucu.ticketing.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -48,24 +50,14 @@ public class AuthService {
                 .calle(req.getCalle())
                 .numeroDir(req.getNumeroDir())
                 .codigoPostal(req.getCodigoPostal())
-                .rol(RolUsuario.USUARIO_GENERAL)
+                .rol("USUARIO_GENERAL")
                 .build();
-        usuarioRepository.save(usuario);
 
-        UsuarioGeneral ug = UsuarioGeneral.builder()
-                .usuario(usuario)
-                .fechaRegistro(LocalDate.now())
-                .estadoVerificacion(UsuarioGeneral.EstadoVerificacion.NO_VERIFICADO)
-                .build();
-        usuarioGeneralRepository.save(ug);
+        Long usuarioId = usuarioRepository.insert(usuario);
 
-        req.getTelefonos().forEach(t -> {
-            Telefono tel = Telefono.builder()
-                    .usuario(usuario)
-                    .numero(t.getNumero())
-                    .build();
-            telefonoRepository.save(tel);
-        });
+        usuarioGeneralRepository.insert(usuarioId, LocalDate.now(), "NO_VERIFICADO");
+
+        req.getTelefonos().forEach(t -> telefonoRepository.insert(usuarioId, t.getNumero()));
     }
 
     public LoginResponse login(LoginRequest req) {
@@ -76,7 +68,7 @@ public class AuthService {
         Usuario usuario = usuarioRepository.findByMail(req.getMail())
                 .orElseThrow(() -> new ReglaNegocioException("Usuario no encontrado"));
 
-        String token = jwtUtil.generateToken(usuario.getId(), usuario.getRol().name());
-        return new LoginResponse(token, usuario.getRol().name(), usuario.getId());
+        String token = jwtUtil.generateToken(usuario.getId(), usuario.getRol());
+        return new LoginResponse(token, usuario.getRol(), usuario.getId());
     }
 }

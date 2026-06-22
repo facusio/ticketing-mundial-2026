@@ -1,19 +1,51 @@
 package com.ucu.ticketing.repository;
 
-import com.ucu.ticketing.entity.FaseSector;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import com.ucu.ticketing.model.FaseSector;
+import com.ucu.ticketing.rowmapper.FaseSectorRowMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface FaseSectorRepository extends JpaRepository<FaseSector, Long> {
+@RequiredArgsConstructor
+public class FaseSectorRepository {
 
-    @Query("SELECT fs FROM FaseSector fs WHERE fs.fase.id = :faseId AND fs.sector.estadio.id = :estadioId")
-    List<FaseSector> findByFaseIdAndEstadioId(@Param("faseId") Long faseId, @Param("estadioId") Long estadioId);
+    private final JdbcTemplate jdbc;
 
-    Optional<FaseSector> findByFaseIdAndSectorId(Long faseId, Long sectorId);
+    private static final String SELECT_RICO = """
+        SELECT fs.id AS fs_id, fs.fase_id, fs.sector_id, fs.precio,
+               s.codigo AS sector_codigo, s.capacidad_maxima AS sector_capacidad,
+               s.estadio_id,
+               e.nombre AS estadio_nombre
+        FROM ticketing.fase_sector fs
+        JOIN ticketing.sector s ON s.id = fs.sector_id
+        JOIN ticketing.estadio e ON e.id = s.estadio_id
+        """;
+
+    public Optional<FaseSector> findByFaseIdAndSectorId(Long faseId, Long sectorId) {
+        return jdbc.query(SELECT_RICO + "WHERE fs.fase_id = ? AND fs.sector_id = ?",
+            new FaseSectorRowMapper(), faseId, sectorId).stream().findFirst();
+    }
+
+    public List<FaseSector> findByFaseIdAndEstadioId(Long faseId, Long estadioId) {
+        return jdbc.query(SELECT_RICO + "WHERE fs.fase_id = ? AND s.estadio_id = ?",
+            new FaseSectorRowMapper(), faseId, estadioId);
+    }
+
+    public void upsert(Long faseId, Long sectorId, BigDecimal precio) {
+        Optional<Long> existingId = jdbc.query(
+            "SELECT id FROM ticketing.fase_sector WHERE fase_id = ? AND sector_id = ?",
+            (rs, rn) -> rs.getLong("id"), faseId, sectorId).stream().findFirst();
+
+        if (existingId.isPresent()) {
+            jdbc.update("UPDATE ticketing.fase_sector SET precio = ? WHERE id = ?", precio, existingId.get());
+        } else {
+            jdbc.update("INSERT INTO ticketing.fase_sector (fase_id, sector_id, precio) VALUES (?, ?, ?)",
+                faseId, sectorId, precio);
+        }
+    }
 }

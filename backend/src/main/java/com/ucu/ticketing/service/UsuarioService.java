@@ -3,10 +3,10 @@ package com.ucu.ticketing.service;
 import com.ucu.ticketing.dto.request.TransferenciaRequest;
 import com.ucu.ticketing.dto.request.VentaRequest;
 import com.ucu.ticketing.dto.response.*;
-import com.ucu.ticketing.entity.*;
 import com.ucu.ticketing.exception.AccesoDenegadoException;
 import com.ucu.ticketing.exception.RecursoNoEncontradoException;
 import com.ucu.ticketing.exception.ReglaNegocioException;
+import com.ucu.ticketing.model.*;
 import com.ucu.ticketing.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +38,7 @@ public class UsuarioService {
     @Value("${app.commission-rate:0.05}")
     private BigDecimal commissionRate;
 
+    @Transactional(readOnly = true)
     public PerfilResponse getPerfil(Long usuarioId) {
         Usuario u = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
@@ -56,9 +57,9 @@ public class UsuarioService {
                 .calle(u.getCalle())
                 .numeroDir(u.getNumeroDir())
                 .codigoPostal(u.getCodigoPostal())
-                .rol(u.getRol().name())
+                .rol(u.getRol())
                 .fechaRegistro(ug != null ? ug.getFechaRegistro() : null)
-                .estadoVerificacion(ug != null ? ug.getEstadoVerificacion().name() : null)
+                .estadoVerificacion(ug != null ? ug.getEstadoVerificacion() : null)
                 .telefonos(telefonos.stream().map(t -> PerfilResponse.TelefonoDto.builder()
                         .id(t.getId())
                         .numero(t.getNumero())
@@ -66,6 +67,7 @@ public class UsuarioService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public List<EventoResponse> getEventos(String pais, Long estadioId) {
         return eventoRepository.findProximosFiltrados(LocalDateTime.now(), pais, estadioId)
                 .stream()
@@ -73,11 +75,12 @@ public class UsuarioService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<PrecioSectorResponse> getPreciosPorEvento(Long eventoId) {
         Evento evento = eventoRepository.findById(eventoId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Evento no encontrado: " + eventoId));
 
-        return faseSectorRepository.findByFaseIdAndEstadioId(evento.getFase().getId(), evento.getEstadio().getId())
+        return faseSectorRepository.findByFaseIdAndEstadioId(evento.getFaseId(), evento.getEstadioId())
                 .stream()
                 .map(fs -> PrecioSectorResponse.builder()
                         .sectorId(fs.getSector().getId())
@@ -90,7 +93,7 @@ public class UsuarioService {
 
     @Transactional
     public VentaResponse crearVenta(Long usuarioId, VentaRequest req) {
-        UsuarioGeneral ug = usuarioGeneralRepository.findById(usuarioId)
+        usuarioGeneralRepository.findById(usuarioId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
 
         Evento evento = eventoRepository.findById(req.getEventoId())
@@ -106,77 +109,68 @@ public class UsuarioService {
             throw new ReglaNegocioException("Superarías el límite de 5 entradas por evento");
         }
 
-        List<Entrada> entradasCreadas = new ArrayList<>();
         BigDecimal subtotal = BigDecimal.ZERO;
+        List<VentaResponse.EntradaResumenDto> resumenPrevio = new ArrayList<>();
+
+        record ItemInfo(Long sectorId, String sectorCodigo, BigDecimal precio) {}
+        List<ItemInfo> items = new ArrayList<>();
 
         for (VentaRequest.ItemVentaRequest item : req.getItems()) {
-            FaseSector fs = faseSectorRepository.findByFaseIdAndSectorId(evento.getFase().getId(), item.getSectorId())
+            FaseSector fs = faseSectorRepository.findByFaseIdAndSectorId(evento.getFaseId(), item.getSectorId())
                     .orElseThrow(() -> new RecursoNoEncontradoException(
                             "No hay precio definido para el sector " + item.getSectorId() + " en esta fase"));
 
-            if (!fs.getSector().getEstadio().getId().equals(evento.getEstadio().getId())) {
+            if (!fs.getSector().getEstadioId().equals(evento.getEstadioId())) {
                 throw new ReglaNegocioException("El sector " + item.getSectorId() + " no pertenece al estadio del evento");
             }
 
             subtotal = subtotal.add(fs.getPrecio().multiply(BigDecimal.valueOf(item.getCantidad())));
-
             for (int i = 0; i < item.getCantidad(); i++) {
-                entradasCreadas.add(Entrada.builder()
-                        .sector(fs.getSector())
-                        .evento(evento)
-                        .propietarioActual(ug.getUsuario())
-                        .precio(fs.getPrecio())
-                        .estado(EstadoEntrada.ACTIVA)
-                        .transferenciasRealizadas((short) 0)
-                        .build());
+                items.add(new ItemInfo(item.getSectorId(), fs.getSector().getCodigo(), fs.getPrecio()));
             }
         }
 
         BigDecimal montoTotal = subtotal.multiply(BigDecimal.ONE.add(commissionRate))
                 .setScale(2, RoundingMode.HALF_UP);
 
-        Venta venta = Venta.builder()
-                .usuarioGeneral(ug)
-                .fecha(LocalDateTime.now())
-                .estado(EstadoVenta.PENDIENTE)
-                .montoTotal(montoTotal)
-                .tasaComision(commissionRate)
-                .build();
-        ventaRepository.save(venta);
+        LocalDateTime ahora = LocalDateTime.now();
+        Long ventaId = ventaRepository.insert(usuarioId, ahora, "PENDIENTE", montoTotal, commissionRate);
 
-        entradasCreadas.forEach(e -> e.setVenta(venta));
-        entradaRepository.saveAll(entradasCreadas);
-
-        List<VentaResponse.EntradaResumenDto> resumen = entradasCreadas.stream()
-                .map(e -> VentaResponse.EntradaResumenDto.builder()
-                        .id(e.getId())
-                        .estado(e.getEstado().name())
-                        .precio(e.getPrecio())
-                        .codigoSector(e.getSector().getCodigo())
-                        .build())
-                .collect(Collectors.toList());
+        for (ItemInfo info : items) {
+            Long entradaId = entradaRepository.insert(
+                    ventaId, evento.getId(), info.sectorId(), usuarioId,
+                    info.precio(), "ACTIVA", (short) 0);
+            resumenPrevio.add(VentaResponse.EntradaResumenDto.builder()
+                    .id(entradaId)
+                    .estado("ACTIVA")
+                    .precio(info.precio())
+                    .codigoSector(info.sectorCodigo())
+                    .build());
+        }
 
         return VentaResponse.builder()
-                .id(venta.getId())
-                .fecha(venta.getFecha())
-                .estado(venta.getEstado().name())
-                .montoTotal(venta.getMontoTotal())
-                .entradas(resumen)
+                .id(ventaId)
+                .fecha(ahora)
+                .estado("PENDIENTE")
+                .montoTotal(montoTotal)
+                .entradas(resumenPrevio)
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public List<VentaResponse> getVentas(Long usuarioId) {
-        return ventaRepository.findByUsuarioGeneralUsuarioIdOrderByFechaDesc(usuarioId)
+        return ventaRepository.findByUsuarioIdOrderByFechaDesc(usuarioId)
                 .stream()
                 .map(v -> VentaResponse.builder()
                         .id(v.getId())
                         .fecha(v.getFecha())
-                        .estado(v.getEstado().name())
+                        .estado(v.getEstado())
                         .montoTotal(v.getMontoTotal())
                         .build())
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<EntradaResponse> getEntradas(Long usuarioId) {
         return entradaRepository.findByPropietarioActualId(usuarioId)
                 .stream()
@@ -189,11 +183,11 @@ public class UsuarioService {
         Entrada entrada = entradaRepository.findById(entradaId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Entrada no encontrada: " + entradaId));
 
-        if (!entrada.getPropietarioActual().getId().equals(usuarioId)) {
+        if (!entrada.getPropietarioActualId().equals(usuarioId)) {
             throw new AccesoDenegadoException("Esta entrada no te pertenece");
         }
 
-        if (entrada.getEstado() == EstadoEntrada.CONSUMIDA) {
+        if ("CONSUMIDA".equals(entrada.getEstado())) {
             throw new ReglaNegocioException("La entrada ya fue consumida");
         }
 
@@ -203,14 +197,16 @@ public class UsuarioService {
             tokenQrRepository.desactivarTokensActivos(entradaId);
 
             LocalDateTime ahora = LocalDateTime.now();
-            tokenActivo = TokenQr.builder()
-                    .entrada(entrada)
-                    .codigo(UUID.randomUUID().toString())
-                    .generadoEn(ahora)
-                    .expiraEn(ahora.plusSeconds(30))
-                    .activo(true)
+            String codigo = UUID.randomUUID().toString();
+            LocalDateTime expiraEn = ahora.plusSeconds(30);
+
+            tokenQrRepository.insert(entradaId, codigo, ahora, expiraEn, true);
+
+            return QrResponse.builder()
+                    .codigo(codigo)
+                    .expiraEn(expiraEn)
+                    .entradaId(entradaId)
                     .build();
-            tokenQrRepository.save(tokenActivo);
         }
 
         return QrResponse.builder()
@@ -225,13 +221,13 @@ public class UsuarioService {
         Entrada entrada = entradaRepository.findById(req.getEntradaId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Entrada no encontrada"));
 
-        if (!entrada.getPropietarioActual().getId().equals(origenId)) {
+        if (!entrada.getPropietarioActualId().equals(origenId)) {
             throw new AccesoDenegadoException("Esta entrada no te pertenece");
         }
-        if (entrada.getEstado() == EstadoEntrada.CONSUMIDA) {
+        if ("CONSUMIDA".equals(entrada.getEstado())) {
             throw new ReglaNegocioException("No se puede transferir una entrada consumida");
         }
-        if (entrada.getEstado() == EstadoEntrada.TRANSFERIDA) {
+        if ("TRANSFERIDA".equals(entrada.getEstado())) {
             throw new ReglaNegocioException("La entrada tiene una transferencia pendiente activa");
         }
         if (entrada.getTransferenciasRealizadas() >= 3) {
@@ -247,23 +243,30 @@ public class UsuarioService {
 
         Usuario origen = usuarioRepository.findById(origenId).orElseThrow();
 
+        LocalDateTime ahora = LocalDateTime.now();
+        Long transferenciaId = transferenciaRepository.insert(
+                req.getEntradaId(), origenId, destino.getId(), ahora, "PENDIENTE");
+
+        entradaRepository.updateEstado(req.getEntradaId(), "TRANSFERIDA");
+
         Transferencia transferencia = Transferencia.builder()
+                .id(transferenciaId)
+                .entradaId(req.getEntradaId())
+                .origenId(origenId)
+                .destinoId(destino.getId())
+                .fechaHora(ahora)
+                .estado("PENDIENTE")
                 .entrada(entrada)
                 .origen(origen)
                 .destino(destino)
-                .fechaHora(LocalDateTime.now())
-                .estado(EstadoTransferencia.PENDIENTE)
                 .build();
-        transferenciaRepository.save(transferencia);
-
-        entrada.setEstado(EstadoEntrada.TRANSFERIDA);
-        entradaRepository.save(entrada);
 
         return toTransferenciaResponse(transferencia);
     }
 
+    @Transactional(readOnly = true)
     public List<TransferenciaResponse> getTransferenciasRecibidas(Long usuarioId) {
-        return transferenciaRepository.findByDestinoIdAndEstado(usuarioId, EstadoTransferencia.PENDIENTE)
+        return transferenciaRepository.findByDestinoIdAndEstado(usuarioId, "PENDIENTE")
                 .stream()
                 .map(this::toTransferenciaResponse)
                 .collect(Collectors.toList());
@@ -274,22 +277,18 @@ public class UsuarioService {
         Transferencia t = transferenciaRepository.findById(transferenciaId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Transferencia no encontrada"));
 
-        if (!t.getDestino().getId().equals(usuarioId)) {
+        if (!t.getDestinoId().equals(usuarioId)) {
             throw new AccesoDenegadoException("Esta transferencia no está dirigida a vos");
         }
-        if (t.getEstado() != EstadoTransferencia.PENDIENTE) {
+        if (!"PENDIENTE".equals(t.getEstado())) {
             throw new ReglaNegocioException("La transferencia ya fue procesada");
         }
 
-        t.setEstado(EstadoTransferencia.ACEPTADA);
-        transferenciaRepository.save(t);
+        transferenciaRepository.updateEstado(transferenciaId, "ACEPTADA");
 
-        // El trigger T7 actualiza propietario_actual y transferencias_realizadas; también lo reflejamos en JPA
-        Entrada entrada = t.getEntrada();
-        entrada.setPropietarioActual(t.getDestino());
-        entrada.setEstado(EstadoEntrada.ACTIVA);
-        entrada.setTransferenciasRealizadas((short) (entrada.getTransferenciasRealizadas() + 1));
-        entradaRepository.save(entrada);
+        // Actualizar entrada: nuevo propietario, estado ACTIVA, incrementar transferencias_realizadas
+        // (el trigger T7 también lo hace; esta actualización explícita garantiza consistencia)
+        entradaRepository.confirmarTransferencia(t.getEntrada().getId(), t.getDestinoId());
     }
 
     @Transactional
@@ -297,19 +296,15 @@ public class UsuarioService {
         Transferencia t = transferenciaRepository.findById(transferenciaId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Transferencia no encontrada"));
 
-        if (!t.getDestino().getId().equals(usuarioId)) {
+        if (!t.getDestinoId().equals(usuarioId)) {
             throw new AccesoDenegadoException("Esta transferencia no está dirigida a vos");
         }
-        if (t.getEstado() != EstadoTransferencia.PENDIENTE) {
+        if (!"PENDIENTE".equals(t.getEstado())) {
             throw new ReglaNegocioException("La transferencia ya fue procesada");
         }
 
-        t.setEstado(EstadoTransferencia.RECHAZADA);
-        transferenciaRepository.save(t);
-
-        Entrada entrada = t.getEntrada();
-        entrada.setEstado(EstadoEntrada.ACTIVA);
-        entradaRepository.save(entrada);
+        transferenciaRepository.updateEstado(transferenciaId, "RECHAZADA");
+        entradaRepository.updateEstado(t.getEntradaId(), "ACTIVA");
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
@@ -337,7 +332,7 @@ public class UsuarioService {
     private EntradaResponse toEntradaResponse(Entrada e) {
         return EntradaResponse.builder()
                 .id(e.getId())
-                .estado(e.getEstado().name())
+                .estado(e.getEstado())
                 .precio(e.getPrecio())
                 .transferenciasRealizadas(e.getTransferenciasRealizadas())
                 .sector(EntradaResponse.SectorDto.builder()
@@ -357,8 +352,8 @@ public class UsuarioService {
     private TransferenciaResponse toTransferenciaResponse(Transferencia t) {
         return TransferenciaResponse.builder()
                 .id(t.getId())
-                .entradaId(t.getEntrada().getId())
-                .estado(t.getEstado().name())
+                .entradaId(t.getEntradaId())
+                .estado(t.getEstado())
                 .fechaHora(t.getFechaHora())
                 .origen(TransferenciaResponse.UsuarioDto.builder()
                         .id(t.getOrigen().getId())

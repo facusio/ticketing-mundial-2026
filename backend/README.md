@@ -1,6 +1,14 @@
 # Ticketing Mundial 2026 — Backend
 
-Sistema de venta, transferencia y validación de entradas para el Mundial 2026. Desarrollado con Java 21 + Spring Boot 3.
+API REST desarrollada en Spring Boot (Java 21) + PostgreSQL para el sistema de ticketing del Mundial 2026.
+Trabajo Obligatorio — Bases de Datos II, UCU 2026.
+
+## Integrantes
+
+- Facundo Banchero
+- Gaston Puyares
+
+
 
 ## Requisitos previos
 
@@ -30,7 +38,7 @@ Sistema de venta, transferencia y validación de entradas para el Mundial 2026. 
 
 2. Ejecutar el script DDL (crea el schema `ticketing` y todas las tablas, triggers y vistas):
    ```bash
-   psql -U postgres -d ticketing_mundial -f ticketing_mundial_2026_v3_create.sql
+   psql -U postgres -d ticketing_mundial -f src/main/resources/db/create.sql
    ```
 
    El script crea:
