@@ -41,11 +41,15 @@ ticketing-mundial-2026/
 ### 1. Base de datos
 
 ```bash
+# Crear la base de datos
 psql -U postgres -c "CREATE DATABASE ticketing_mundial;"
-psql -U postgres -d ticketing_mundial -f backend/src/main/resources/db/create.sql
-```
 
-El script crea el schema `ticketing` con todas las tablas, triggers y vistas.
+# Crear el schema, tablas, triggers y vistas
+psql -U postgres -d ticketing_mundial -f backend/src/main/resources/db/create.sql
+
+# Cargar datos de prueba (usuarios, estadio, eventos, etc.)
+psql -U postgres -d ticketing_mundial -f backend/src/main/resources/db/seed.sql
+```
 
 ### 2. Backend
 
@@ -75,6 +79,32 @@ npm run dev
 La app queda disponible en `http://localhost:3000`.
 
 > El backend debe estar corriendo antes de levantar el frontend.
+
+---
+
+## Credenciales de prueba
+
+Cargadas por `seed.sql`. Todos los usuarios tienen password corta para facilitar las pruebas.
+
+| Mail | Password | Rol |
+|------|----------|-----|
+| `admin@mundial2026.com` | `admin123` | ADMIN_PAIS |
+| `funcionario@mundial2026.com` | `func123` | FUNCIONARIO |
+| `usuario@mundial2026.com` | `user123` | USUARIO_GENERAL |
+
+> Para crear usuarios generales adicionales también podés usar el formulario de registro en la app.
+
+---
+
+## Datos de prueba incluidos en seed.sql
+
+- **1 estadio:** Estadio Centenario (Montevideo) con sectores NORTE, SUR y PALCO
+- **5 fases:** Fase de Grupos, Octavos, Cuartos, Semifinal y Final — con precios definidos para cada sector
+- **3 eventos:**
+  - Argentina vs Brasil (Fase de Grupos, en 7 días)
+  - Uruguay vs Colombia (Fase de Grupos, en 10 días)
+  - Argentina vs Uruguay (Octavos de Final, en 20 días)
+- **Funcionario** asignado a los sectores NORTE y SUR del Centenario
 
 ---
 
