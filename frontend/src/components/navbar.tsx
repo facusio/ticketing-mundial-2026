@@ -1,0 +1,79 @@
+import { cookies } from 'next/headers'
+import Link from 'next/link'
+import { decodeJwt } from '@/lib/utils'
+import { LogoutButton } from './logout-button'
+import type { Rol } from '@/lib/types'
+
+const NAV_LINKS: Record<Rol, { href: string; label: string }[]> = {
+  USUARIO_GENERAL: [
+    { href: '/dashboard', label: 'Inicio' },
+    { href: '/eventos', label: 'Eventos' },
+    { href: '/mis-entradas', label: 'Mis Entradas' },
+    { href: '/transferir', label: 'Transferir' },
+  ],
+  ADMIN_PAIS: [
+    { href: '/admin', label: 'Dashboard' },
+    { href: '/admin/estadios', label: 'Estadios' },
+    { href: '/admin/eventos', label: 'Eventos' },
+    { href: '/admin/fases', label: 'Fases' },
+    { href: '/admin/reportes', label: 'Reportes' },
+  ],
+  FUNCIONARIO: [
+    { href: '/validar', label: 'Escanear QR' },
+    { href: '/validar/historial', label: 'Historial' },
+  ],
+}
+
+export async function Navbar() {
+  const cookieStore = await cookies()
+  const token = cookieStore.get('token')?.value
+  if (!token) return null
+
+  const payload = decodeJwt(token)
+  if (!payload) return null
+
+  const rol = payload.rol
+  const links = NAV_LINKS[rol] ?? []
+
+  const rolLabel: Record<Rol, string> = {
+    USUARIO_GENERAL: 'Hincha',
+    ADMIN_PAIS: 'Admin País',
+    FUNCIONARIO: 'Funcionario',
+  }
+
+  return (
+    <header className="sticky top-0 z-40 border-b border-slate-700 bg-slate-900/95 backdrop-blur-sm">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          <div className="flex items-center gap-8">
+            <Link href="/" className="flex items-center gap-2">
+              <span className="text-2xl">⚽</span>
+              <span className="font-bold text-white text-lg">
+                Mundial <span className="text-green-400">2026</span>
+              </span>
+            </Link>
+
+            <nav className="hidden md:flex items-center gap-1">
+              {links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span className="hidden sm:inline-flex items-center rounded-full bg-green-500/10 border border-green-500/30 px-3 py-1 text-xs font-semibold text-green-400">
+              {rolLabel[rol]}
+            </span>
+            <LogoutButton />
+          </div>
+        </div>
+      </div>
+    </header>
+  )
+}
