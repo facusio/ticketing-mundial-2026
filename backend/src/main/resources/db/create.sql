@@ -38,7 +38,7 @@ CREATE TABLE usuario (
     CONSTRAINT uq_usuario_mail UNIQUE (mail),
     CONSTRAINT uq_usuario_documento UNIQUE (pais_doc, tipo_doc, numero_doc),
     CONSTRAINT chk_usuario_rol
-        CHECK (rol IN ('ADMIN_PAIS', 'FUNCIONARIO', 'USUARIO_GENERAL'))
+        CHECK (rol IN ('SUPERADMIN', 'ADMIN_PAIS', 'FUNCIONARIO', 'USUARIO_GENERAL'))
 );
 
 -- =============================================================================

@@ -88,11 +88,12 @@ Cargadas por `seed.sql`. Todos los usuarios tienen password corta para facilitar
 
 | Mail | Password | Rol |
 |------|----------|-----|
+| `superadmin@mundial2026.com` | `super123` | SUPERADMIN |
 | `admin@mundial2026.com` | `admin123` | ADMIN_PAIS |
 | `funcionario@mundial2026.com` | `func123` | FUNCIONARIO |
 | `usuario@mundial2026.com` | `user123` | USUARIO_GENERAL |
 
-> Para crear usuarios generales adicionales también podés usar el formulario de registro en la app.
+> Los usuarios generales pueden registrarse desde el formulario de la app. El SUPERADMIN es el único que puede crear cuentas de ADMIN_PAIS y FUNCIONARIO vía API.
 
 ---
 
@@ -112,9 +113,10 @@ Cargadas por `seed.sql`. Todos los usuarios tienen password corta para facilitar
 
 | Rol | Descripción |
 |-----|-------------|
-| `USUARIO_GENERAL` | Compra entradas, genera QR, transfiere entradas |
+| `SUPERADMIN` | Crea cuentas de ADMIN_PAIS y FUNCIONARIO (`/api/superadmin/**`) |
 | `ADMIN_PAIS` | Administra estadios, sectores, eventos, fases y precios |
 | `FUNCIONARIO` | Valida entradas en el acceso al estadio escaneando QR |
+| `USUARIO_GENERAL` | Compra entradas, genera QR, transfiere entradas |
 
 ---
 

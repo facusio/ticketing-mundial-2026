@@ -4,7 +4,6 @@ import com.ucu.ticketing.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -35,6 +34,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**").permitAll()
+                        .requestMatchers("/api/superadmin/**").hasRole("SUPERADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN_PAIS")
                         .requestMatchers("/api/funcionario/**").hasRole("FUNCIONARIO")
                         .requestMatchers("/api/usuario/**").hasRole("USUARIO_GENERAL")

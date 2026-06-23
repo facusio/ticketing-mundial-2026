@@ -12,6 +12,11 @@ SET search_path = ticketing;
 -- =============================================================================
 INSERT INTO usuario (mail, password, pais_doc, tipo_doc, numero_doc, pais_dir, localidad, calle, numero_dir, codigo_postal, rol)
 VALUES
+    ('superadmin@mundial2026.com',
+     crypt('super123', gen_salt('bf', 10)),
+     'Uruguay', 'CI', '00000001', 'Uruguay', 'Montevideo', 'Constituyente', '1647', '11200',
+     'SUPERADMIN'),
+
     ('admin@mundial2026.com',
      crypt('admin123', gen_salt('bf', 10)),
      'Uruguay', 'CI', '11111111', 'Uruguay', 'Montevideo', 'Rivera', '1234', '11300',
