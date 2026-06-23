@@ -8,6 +8,7 @@ import com.ucu.ticketing.exception.ReglaNegocioException;
 import com.ucu.ticketing.model.Estadio;
 import com.ucu.ticketing.model.Evento;
 import com.ucu.ticketing.model.Fase;
+import com.ucu.ticketing.model.Sector;
 import com.ucu.ticketing.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -29,6 +30,8 @@ public class AdminService {
     private final FaseRepository faseRepository;
     private final FaseSectorRepository faseSectorRepository;
     private final EventoRepository eventoRepository;
+    private final FuncionarioRepository funcionarioRepository;
+    private final FuncionarioSectorRepository funcionarioSectorRepository;
     private final JdbcTemplate jdbcTemplate;
 
     @Transactional
@@ -132,6 +135,28 @@ public class AdminService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Sector no encontrado"));
 
         faseSectorRepository.upsert(faseId, req.getSectorId(), req.getPrecio());
+    }
+
+    @Transactional
+    public void asignarFuncionarioASector(Long adminId, Long sectorId, Long funcionarioId) {
+        Sector sector = sectorRepository.findById(sectorId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Sector no encontrado"));
+
+        Estadio estadio = estadioRepository.findById(sector.getEstadioId())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Estadio no encontrado"));
+
+        if (!estadio.getAdminId().equals(adminId)) {
+            throw new ReglaNegocioException("Este sector no pertenece a tus estadios");
+        }
+
+        funcionarioRepository.findById(funcionarioId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Funcionario no encontrado"));
+
+        if (funcionarioSectorRepository.existsByFuncionarioIdAndSectorId(funcionarioId, sectorId)) {
+            throw new ReglaNegocioException("El funcionario ya está asignado a ese sector");
+        }
+
+        funcionarioSectorRepository.insert(funcionarioId, sectorId);
     }
 
     public List<Map<String, Object>> getRankingEventos() {

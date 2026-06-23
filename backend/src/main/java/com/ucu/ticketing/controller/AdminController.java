@@ -58,6 +58,15 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getEventos(adminId(auth)));
     }
 
+    @PostMapping("/sectores/{sectorId}/funcionarios/{funcionarioId}")
+    @Operation(summary = "Asignar un funcionario a un sector")
+    public ResponseEntity<Void> asignarFuncionario(@PathVariable Long sectorId,
+                                                    @PathVariable Long funcionarioId,
+                                                    Authentication auth) {
+        adminService.asignarFuncionarioASector(adminId(auth), sectorId, funcionarioId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
     @PostMapping("/fases")
     @Operation(summary = "Crear fase del torneo")
     public ResponseEntity<Fase> crearFase(@Valid @RequestBody FaseRequest req) {
