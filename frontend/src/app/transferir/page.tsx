@@ -11,6 +11,7 @@ import { api } from '@/lib/api'
 import { formatDate, formatCurrency } from '@/lib/utils'
 import type { Entrada, Transferencia } from '@/lib/types'
 import { ArrowRightLeft, Check, X, Send } from 'lucide-react'
+import { LoadingBall } from '@/components/loading-ball'
 
 export default function TransferirPage() {
   const [entradas, setEntradas] = useState<Entrada[]>([])
@@ -74,18 +75,14 @@ export default function TransferirPage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-green-500 border-t-transparent" />
-      </div>
-    )
+    return <LoadingBall />
   }
 
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-white mb-1">Transferencias</h1>
-        <p className="text-slate-400">Transferí entradas a otros usuarios o gestioná las que recibiste</p>
+        <h1 className="text-3xl font-bold text-slate-800 mb-1">Transferencias</h1>
+        <p className="text-slate-600">Transferí entradas a otros usuarios o gestioná las que recibiste</p>
       </div>
 
       {actionMsg && (
@@ -112,7 +109,7 @@ export default function TransferirPage() {
               <div key={t.id} className="p-4 rounded-lg bg-amber-500/5 border border-amber-500/20">
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="font-semibold text-white">
+                    <p className="font-semibold text-slate-800">
                       {t.evento.equipoLocal} vs {t.evento.equipoVisitante}
                     </p>
                     <p className="text-sm text-slate-400">
@@ -149,9 +146,9 @@ export default function TransferirPage() {
           ) : (
             <div className="space-y-3">
               {transferibles.map((e) => (
-                <div key={e.id} className="flex items-center justify-between p-4 rounded-lg bg-slate-700/50 border border-slate-600">
+                <div key={e.id} className="flex items-center justify-between p-4 rounded-lg bg-slate-50 border border-slate-200">
                   <div>
-                    <p className="font-semibold text-white text-sm">
+                    <p className="font-semibold text-slate-800 text-sm">
                       {e.evento.equipoLocal} vs {e.evento.equipoVisitante}
                     </p>
                     <p className="text-xs text-slate-400">

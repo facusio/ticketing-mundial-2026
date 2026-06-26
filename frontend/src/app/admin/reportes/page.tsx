@@ -45,8 +45,8 @@ export default function ReportesPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-white mb-2">Reportes</h1>
-      <p className="text-slate-400 mb-8">Análisis y métricas del torneo</p>
+      <h1 className="text-3xl font-bold text-slate-800 mb-2">Reportes</h1>
+      <p className="text-slate-600 mb-8">Análisis y métricas del torneo</p>
 
       <Tabs defaultValue="eventos">
         <TabsList>

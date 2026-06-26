@@ -35,74 +35,52 @@ export default async function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-white mb-2">Mi Dashboard</h1>
-      <p className="text-slate-400 mb-8">Bienvenido al Mundial 2026</p>
+      <h1 className="text-3xl font-bold text-slate-800 mb-2">Mi Dashboard</h1>
+      <p className="text-slate-600 mb-6">Bienvenido al Mundial 2026</p>
 
-      {/* Quick stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <Card className="bg-green-500/10 border-green-500/30">
-          <CardContent className="flex items-center gap-4 pt-5">
-            <div className="p-3 bg-green-500/20 rounded-lg">
-              <Ticket className="h-6 w-6 text-green-400" />
-            </div>
-            <div>
-              <p className="text-sm text-green-300">Entradas activas</p>
-              <p className="text-2xl font-bold text-white">{entradasActivas.length}</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-amber-500/10 border-amber-500/30">
-          <CardContent className="flex items-center gap-4 pt-5">
-            <div className="p-3 bg-amber-500/20 rounded-lg">
-              <ArrowRightLeft className="h-6 w-6 text-amber-400" />
-            </div>
-            <div>
-              <p className="text-sm text-amber-300">Transferencias pendientes</p>
-              <p className="text-2xl font-bold text-white">{transferenciasPendientes.length}</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-blue-500/10 border-blue-500/30">
-          <CardContent className="flex items-center gap-4 pt-5">
-            <div className="p-3 bg-blue-500/20 rounded-lg">
-              <Calendar className="h-6 w-6 text-blue-400" />
-            </div>
-            <div>
-              <p className="text-sm text-blue-300">Próximos eventos</p>
-              <p className="text-2xl font-bold text-white">{(eventos ?? []).length}</p>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Acciones rápidas */}
+      <div className="grid grid-cols-2 gap-4 mb-8">
+        <Link href="/eventos">
+          <Card className="hover:border-green-400 hover:bg-green-50 transition-all cursor-pointer">
+            <CardContent className="flex flex-col items-center justify-center py-6 gap-3">
+              <ShoppingCart className="h-8 w-8 text-green-500" />
+              <span className="text-sm font-medium text-slate-700">Comprar entradas</span>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/mis-entradas">
+          <Card className="hover:border-green-400 hover:bg-green-50 transition-all cursor-pointer">
+            <CardContent className="flex flex-col items-center justify-center py-6 gap-3">
+              <Ticket className="h-8 w-8 text-green-500" />
+              <span className="text-sm font-medium text-slate-700">Ver mis entradas</span>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Próximos eventos */}
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader>
             <CardTitle>Próximos Eventos</CardTitle>
-            <Link href="/eventos" className="text-sm text-green-400 hover:text-green-300">
-              Ver todos →
-            </Link>
           </CardHeader>
           <CardContent className="space-y-3 pt-0">
             {proximosEventos.length === 0 ? (
-              <p className="text-slate-400 text-sm">No hay eventos próximos disponibles.</p>
+              <p className="text-slate-500 text-sm">No hay eventos próximos disponibles.</p>
             ) : (
               proximosEventos.map((ev) => (
                 <Link
                   key={ev.id}
                   href={`/eventos/${ev.id}`}
-                  className="block p-3 rounded-lg bg-slate-700/50 hover:bg-slate-700 transition-colors"
+                  className="block p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors border border-slate-100"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-white text-sm">
+                    <span className="font-semibold text-slate-800 text-sm">
                       {ev.equipoLocal} vs {ev.equipoVisitante}
                     </span>
                     <Badge variant="blue">{ev.fase.nombre}</Badge>
                   </div>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-slate-500 mt-1">
                     {ev.estadio.nombre} · {formatDate(ev.fechaHora)}
                   </p>
                 </Link>
@@ -111,46 +89,50 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Accesos rápidos */}
+        {/* Stats + info */}
         <div className="space-y-4">
           {transferenciasPendientes.length > 0 && (
-            <Card className="border-amber-500/40 bg-amber-500/5">
+            <Card className="border-amber-200 bg-amber-50">
               <CardContent className="pt-5">
                 <div className="flex items-center gap-3 mb-3">
-                  <ArrowRightLeft className="h-5 w-5 text-amber-400" />
-                  <p className="font-semibold text-amber-300">
+                  <ArrowRightLeft className="h-5 w-5 text-amber-600" />
+                  <p className="font-semibold text-amber-800">
                     Tenés {transferenciasPendientes.length} transferencia
                     {transferenciasPendientes.length > 1 ? 's' : ''} pendiente
                     {transferenciasPendientes.length > 1 ? 's' : ''}
                   </p>
                 </div>
-                <Link
-                  href="/transferir"
-                  className="text-sm text-amber-400 hover:text-amber-300 underline"
-                >
+                <Link href="/transferir" className="text-sm text-amber-700 hover:text-amber-800 underline">
                   Revisar transferencias →
                 </Link>
               </CardContent>
             </Card>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
-            <Link href="/eventos">
-              <Card className="hover:border-green-500/50 hover:bg-slate-700/50 transition-all cursor-pointer">
-                <CardContent className="flex flex-col items-center justify-center py-6 gap-3">
-                  <ShoppingCart className="h-8 w-8 text-green-400" />
-                  <span className="text-sm font-medium text-slate-200">Comprar entradas</span>
-                </CardContent>
-              </Card>
-            </Link>
-            <Link href="/mis-entradas">
-              <Card className="hover:border-green-500/50 hover:bg-slate-700/50 transition-all cursor-pointer">
-                <CardContent className="flex flex-col items-center justify-center py-6 gap-3">
-                  <Ticket className="h-8 w-8 text-green-400" />
-                  <span className="text-sm font-medium text-slate-200">Ver mis entradas</span>
-                </CardContent>
-              </Card>
-            </Link>
+          <div className="grid grid-cols-3 gap-3">
+            <Card className="bg-green-50 border-green-200">
+              <CardContent className="flex flex-col items-center justify-center py-4 px-3 gap-1">
+                <Ticket className="h-5 w-5 text-green-600" />
+                <p className="text-xl font-bold text-slate-800">{entradasActivas.length}</p>
+                <p className="text-xs text-green-700 text-center leading-tight">Entradas activas</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-amber-50 border-amber-200">
+              <CardContent className="flex flex-col items-center justify-center py-4 px-3 gap-1">
+                <ArrowRightLeft className="h-5 w-5 text-amber-600" />
+                <p className="text-xl font-bold text-slate-800">{transferenciasPendientes.length}</p>
+                <p className="text-xs text-amber-700 text-center leading-tight">Transferencias</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-blue-50 border-blue-200">
+              <CardContent className="flex flex-col items-center justify-center py-4 px-3 gap-1">
+                <Calendar className="h-5 w-5 text-blue-600" />
+                <p className="text-xl font-bold text-slate-800">{(eventos ?? []).length}</p>
+                <p className="text-xs text-blue-700 text-center leading-tight">Próx. eventos</p>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Últimas entradas activas */}
@@ -164,15 +146,15 @@ export default async function DashboardPage() {
                   <Link
                     key={e.id}
                     href={`/mis-entradas/${e.id}/qr`}
-                    className="block p-3 rounded-lg bg-slate-700/50 hover:bg-slate-700 transition-colors"
+                    className="block p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors border border-slate-100"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-white">
+                      <span className="text-sm font-medium text-slate-800">
                         {e.evento.equipoLocal} vs {e.evento.equipoVisitante}
                       </span>
                       <Badge variant="green">{e.sector.codigo}</Badge>
                     </div>
-                    <p className="text-xs text-slate-400 mt-1">
+                    <p className="text-xs text-slate-500 mt-1">
                       {e.evento.estadioNombre} · {formatCurrency(e.precio)} · Ver QR →
                     </p>
                   </Link>

@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: #0f172a;
+  --color-background: #f1f5f9;
   --color-surface: #1e293b;
   --color-surface-high: #273449;
   --color-border: #334155;
-  --color-text-primary: #f1f5f9;
-  --color-text-muted: #94a3b8;
+  --color-text-primary: #0f172a;
+  --color-text-muted: #64748b;
   --color-accent-green: #22c55e;
   --color-accent-gold: #f59e0b;
   --font-sans: var(--font-geist-sans);
@@ -14,8 +14,8 @@
 }
 
 :root {
-  --background: #0f172a;
-  --foreground: #f1f5f9;
+  --background: #f1f5f9;
+  --foreground: #0f172a;
 }
 
 body {
@@ -24,17 +24,22 @@ body {
   font-family: var(--font-sans, system-ui, sans-serif);
 }
 
+/* Hover border cycle para cards de entradas */
+.hbc-green:hover { border-color: #22c55e !important; border-width: 2px !important; }
+.hbc-blue:hover  { border-color: #3b82f6 !important; border-width: 2px !important; }
+.hbc-red:hover   { border-color: #ef4444 !important; border-width: 2px !important; }
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #1e293b;
+  background: #e2e8f0;
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #94a3b8;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #64748b;
 }

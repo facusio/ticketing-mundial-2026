@@ -88,8 +88,8 @@ export default function FasesPage() {
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Fases y Precios</h1>
-          <p className="text-slate-400 mt-1">Gestión de fases del torneo y precios por sector</p>
+          <h1 className="text-3xl font-bold text-slate-800">Fases y Precios</h1>
+          <p className="text-slate-600 mt-1">Gestión de fases del torneo y precios por sector</p>
         </div>
       </div>
 

@@ -122,7 +122,7 @@ export default function EventoDetallePage({
 
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
-      <Link href="/eventos" className="inline-flex items-center gap-1 text-sm text-slate-400 hover:text-white mb-6 transition-colors">
+      <Link href="/eventos" className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-900 mb-6 transition-colors">
         <ChevronLeft className="h-4 w-4" /> Volver a eventos
       </Link>
 
@@ -165,16 +165,17 @@ export default function EventoDetallePage({
           {precios.length === 0 ? (
             <p className="text-slate-400 text-sm">No hay precios disponibles para este evento.</p>
           ) : (
-            precios.map((precio) => {
+            precios.map((precio, i) => {
               const cant = cantidades[precio.sectorId] ?? 0
+              const hoverColors = ['hbc-green', 'hbc-blue', 'hbc-red']
               return (
                 <div
                   key={precio.sectorId}
-                  className="flex items-center justify-between p-4 rounded-lg bg-slate-700/50 border border-slate-600"
+                  className={`flex items-center justify-between p-4 rounded-lg bg-slate-50 border border-slate-200 transition-colors ${hoverColors[i % 3]}`}
                 >
                   <div>
-                    <p className="font-semibold text-white">Sector {precio.codigoSector}</p>
-                    <p className="text-sm text-slate-400">
+                    <p className="font-semibold text-slate-800">Sector {precio.codigoSector}</p>
+                    <p className="text-sm text-slate-500">
                       Capacidad: {precio.capacidadMaxima.toLocaleString()} · {formatCurrency(precio.precio)} c/u
                     </p>
                   </div>
@@ -182,15 +183,15 @@ export default function EventoDetallePage({
                     <button
                       onClick={() => decrement(precio.sectorId)}
                       disabled={cant === 0}
-                      className="p-1 rounded-full text-slate-400 hover:text-white hover:bg-slate-600 disabled:opacity-30 transition-colors"
+                      className="p-1 rounded-full text-slate-500 hover:text-slate-800 hover:bg-slate-200 disabled:opacity-30 transition-colors"
                     >
                       <Minus className="h-4 w-4" />
                     </button>
-                    <span className="w-6 text-center font-bold text-white">{cant}</span>
+                    <span className="w-6 text-center font-bold text-slate-800">{cant}</span>
                     <button
                       onClick={() => increment(precio.sectorId)}
                       disabled={totalEntradas >= 5}
-                      className="p-1 rounded-full text-slate-400 hover:text-green-400 hover:bg-slate-600 disabled:opacity-30 transition-colors"
+                      className="p-1 rounded-full text-slate-500 hover:text-green-600 hover:bg-slate-200 disabled:opacity-30 transition-colors"
                     >
                       <Plus className="h-4 w-4" />
                     </button>
@@ -204,7 +205,7 @@ export default function EventoDetallePage({
           <CardFooter className="flex items-center justify-between">
             <div>
               <p className="text-sm text-slate-400">Total</p>
-              <p className="text-xl font-bold text-white">
+              <p className="text-xl font-bold text-slate-800">
                 {formatCurrency(totalPrice * 1.05)}{' '}
                 <span className="text-xs text-slate-500 font-normal">(+5% comisión)</span>
               </p>

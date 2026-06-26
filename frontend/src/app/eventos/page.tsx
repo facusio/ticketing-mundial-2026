@@ -21,13 +21,13 @@ export default async function EventosPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-white mb-2">Eventos disponibles</h1>
-      <p className="text-slate-400 mb-8">Seleccioná un partido para ver precios y comprar entradas</p>
+      <h1 className="text-3xl font-bold text-slate-800 mb-2">Eventos disponibles</h1>
+      <p className="text-slate-600 mb-8">Seleccioná un partido para ver precios y comprar entradas</p>
 
       {eventos.length === 0 ? (
         <Card>
           <CardContent className="py-16 text-center">
-            <div className="text-5xl mb-4">⚽</div>
+            <img src="/logo-mundial.png" alt="FIFA World Cup 2026" className="h-20 w-auto mx-auto mb-4" />
             <p className="text-slate-400">No hay eventos disponibles en este momento.</p>
           </CardContent>
         </Card>
@@ -44,13 +44,13 @@ export default async function EventosPage() {
 
                   <div className="flex-1">
                     <div className="flex items-center justify-center gap-3 my-4">
-                      <span className="text-lg font-bold text-white">{ev.equipoLocal}</span>
+                      <span className="text-lg font-bold text-slate-800">{ev.equipoLocal}</span>
                       <span className="text-slate-500 font-bold">vs</span>
-                      <span className="text-lg font-bold text-white">{ev.equipoVisitante}</span>
+                      <span className="text-lg font-bold text-slate-800">{ev.equipoVisitante}</span>
                     </div>
                   </div>
 
-                  <div className="space-y-2 mt-4 pt-4 border-t border-slate-700">
+                  <div className="space-y-2 mt-4 pt-4 border-t border-slate-200">
                     <div className="flex items-center gap-2 text-sm text-slate-400">
                       <MapPin className="h-4 w-4 text-green-400 flex-shrink-0" />
                       <span>{ev.estadio.nombre} — {ev.estadio.ciudad}, {ev.estadio.pais}</span>

@@ -13,7 +13,7 @@ export function LogoutButton() {
   }
 
   return (
-    <Button variant="ghost" size="sm" onClick={handleLogout}>
+    <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-600 hover:bg-slate-100 hover:text-slate-900">
       <LogOut className="h-4 w-4" />
       <span className="hidden sm:inline">Salir</span>
     </Button>

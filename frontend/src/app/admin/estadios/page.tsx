@@ -53,8 +53,8 @@ export default function AdminEstadiosPage() {
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white">Estadios</h1>
-          <p className="text-slate-400 mt-1">Gestionar estadios y sus sectores</p>
+          <h1 className="text-3xl font-bold text-slate-800">Estadios</h1>
+          <p className="text-slate-600 mt-1">Gestionar estadios y sus sectores</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
@@ -122,7 +122,7 @@ export default function AdminEstadiosPage() {
                 <CardContent className="p-5">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="font-semibold text-white group-hover:text-green-400 transition-colors">
+                      <h3 className="font-semibold text-slate-800 group-hover:text-green-600 transition-colors">
                         {est.nombre}
                       </h3>
                       <div className="flex items-center gap-1 mt-2 text-sm text-slate-400">

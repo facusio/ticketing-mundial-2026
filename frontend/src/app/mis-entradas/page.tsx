@@ -19,6 +19,8 @@ const estadoLabel: Record<EstadoEntrada, string> = {
   CONSUMIDA: 'Consumida',
 }
 
+const HOVER_COLORS = ['hbc-green', 'hbc-blue', 'hbc-red']
+
 export default async function MisEntradasPage() {
   const cookieStore = await cookies()
   const token = cookieStore.get('token')?.value ?? ''
@@ -39,11 +41,11 @@ export default async function MisEntradasPage() {
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white">Mis Entradas</h1>
-          <p className="text-slate-400 mt-1">{entradas.length} entrada{entradas.length !== 1 ? 's' : ''} en total</p>
+          <h1 className="text-3xl font-bold text-slate-800">Mis Entradas</h1>
+          <p className="text-slate-600 mt-1">{entradas.length} entrada{entradas.length !== 1 ? 's' : ''} en total</p>
         </div>
         <Link href="/transferir">
-          <Button variant="outline">
+          <Button variant="outline" className="border-slate-400 text-slate-700 hover:bg-slate-100 hover:border-slate-500">
             <ArrowRightLeft className="h-4 w-4" /> Transferencias
           </Button>
         </Link>
@@ -65,8 +67,8 @@ export default async function MisEntradasPage() {
             <section>
               <h2 className="text-lg font-semibold text-green-400 mb-4">Entradas activas</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {activas.map((e) => (
-                  <EntradaCard key={e.id} entrada={e} />
+                {activas.map((e, i) => (
+                  <EntradaCard key={e.id} entrada={e} hoverColor={HOVER_COLORS[i % 3]} />
                 ))}
               </div>
             </section>
@@ -74,10 +76,10 @@ export default async function MisEntradasPage() {
 
           {otras.length > 0 && (
             <section>
-              <h2 className="text-lg font-semibold text-slate-400 mb-4">Otras entradas</h2>
+              <h2 className="text-lg font-semibold text-slate-600 mb-4">Otras entradas</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {otras.map((e) => (
-                  <EntradaCard key={e.id} entrada={e} />
+                {otras.map((e, i) => (
+                  <EntradaCard key={e.id} entrada={e} hoverColor={HOVER_COLORS[i % 3]} />
                 ))}
               </div>
             </section>
@@ -88,27 +90,27 @@ export default async function MisEntradasPage() {
   )
 }
 
-function EntradaCard({ entrada }: { entrada: Entrada }) {
+function EntradaCard({ entrada, hoverColor }: { entrada: Entrada; hoverColor: string }) {
   const isActiva = entrada.estado === 'ACTIVA'
 
   return (
-    <Card className={`${isActiva ? 'hover:border-green-500/50' : 'opacity-75'} transition-all`}>
+    <Card className={`${isActiva ? hoverColor : 'opacity-75'} transition-all`}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <CardTitle className="text-base">
             {entrada.evento.equipoLocal} vs {entrada.evento.equipoVisitante}
           </CardTitle>
-          <Badge variant={badgeVariant[entrada.estado]}>{estadoLabel[entrada.estado]}</Badge>
+          {!isActiva && <Badge variant={badgeVariant[entrada.estado]}>{estadoLabel[entrada.estado]}</Badge>}
         </div>
       </CardHeader>
       <CardContent className="space-y-2 pt-0">
         <p className="text-sm text-slate-400">{entrada.evento.estadioNombre}</p>
         <p className="text-sm text-slate-400">{formatDate(entrada.evento.fechaHora)}</p>
-        <div className="flex items-center justify-between text-sm pt-2 border-t border-slate-700">
+        <div className="flex items-center justify-between text-sm pt-2 border-t border-slate-200">
           <span className="text-slate-400">
             Sector <span className="text-green-400 font-medium">{entrada.sector.codigo}</span>
           </span>
-          <span className="text-slate-300 font-medium">{formatCurrency(entrada.precio)}</span>
+          <span className="text-slate-700 font-medium">{formatCurrency(entrada.precio)}</span>
         </div>
         {entrada.transferenciasRealizadas > 0 && (
           <p className="text-xs text-amber-400">

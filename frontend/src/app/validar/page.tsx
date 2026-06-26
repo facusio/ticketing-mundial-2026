@@ -107,8 +107,8 @@ export default function ValidarPage() {
     <div className="mx-auto max-w-lg px-4 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white">Validar QR</h1>
-          <p className="text-slate-400 mt-1">Escaneá el QR del asistente</p>
+          <h1 className="text-3xl font-bold text-slate-800">Validar QR</h1>
+          <p className="text-slate-600 mt-1">Escaneá el QR del asistente</p>
         </div>
         <Link href="/validar/historial">
           <Button variant="outline" size="sm">

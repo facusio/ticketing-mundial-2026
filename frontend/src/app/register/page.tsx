@@ -125,12 +125,12 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-lg">
         <div className="text-center mb-8">
-          <div className="text-5xl mb-3">⚽</div>
-          <h1 className="text-3xl font-bold text-white">Crear cuenta</h1>
-          <p className="text-slate-400 mt-1">Mundial 2026 · Ticketing</p>
+          <img src="/logo-mundial.png" alt="FIFA World Cup 2026" className="h-20 w-auto mx-auto mb-3" />
+          <h1 className="text-3xl font-bold text-slate-800">Crear cuenta</h1>
+          <p className="text-slate-600 mt-1">Mundial 2026 · Ticketing</p>
         </div>
 
         {/* Step indicator */}
@@ -139,13 +139,13 @@ export default function RegisterPage() {
             <div key={s} className="flex items-center gap-2">
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
-                  i <= step ? 'bg-green-500 text-white' : 'bg-slate-700 text-slate-400'
+                  i <= step ? 'bg-green-500 text-white' : 'bg-slate-200 text-slate-500'
                 }`}
               >
                 {i + 1}
               </div>
               {i < STEPS.length - 1 && (
-                <div className={`w-8 h-0.5 ${i < step ? 'bg-green-500' : 'bg-slate-700'}`} />
+                <div className={`w-8 h-0.5 ${i < step ? 'bg-green-500' : 'bg-slate-200'}`} />
               )}
             </div>
           ))}
@@ -189,7 +189,7 @@ export default function RegisterPage() {
                   <Label htmlFor="numeroDoc">Número de documento</Label>
                   <Input id="numeroDoc" value={form.numeroDoc} onChange={(e) => set('numeroDoc', e.target.value)} placeholder="12345678" />
                 </div>
-                <hr className="border-slate-700" />
+                <hr className="border-slate-200" />
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="paisDir">País de residencia</Label>
@@ -214,7 +214,7 @@ export default function RegisterPage() {
                   <Label htmlFor="cp">Código postal</Label>
                   <Input id="cp" value={form.codigoPostal} onChange={(e) => set('codigoPostal', e.target.value)} placeholder="1043" />
                 </div>
-                <hr className="border-slate-700" />
+                <hr className="border-slate-200" />
                 <div>
                   <Label>Teléfonos</Label>
                   {form.telefonos.map((tel, i) => (
@@ -235,7 +235,7 @@ export default function RegisterPage() {
                       )}
                     </div>
                   ))}
-                  <Button type="button" variant="ghost" size="sm" className="mt-2" onClick={addTelefono}>
+                  <Button type="button" variant="ghost" size="sm" className="mt-2 text-slate-600 hover:bg-slate-100 hover:text-slate-800" onClick={addTelefono}>
                     <Plus className="h-4 w-4" /> Agregar teléfono
                   </Button>
                 </div>
@@ -254,7 +254,7 @@ export default function RegisterPage() {
                 ].map(([label, value]) => (
                   <div key={label} className="flex justify-between text-sm">
                     <span className="text-slate-400">{label}</span>
-                    <span className="text-slate-200 font-medium">{value}</span>
+                    <span className="text-slate-700 font-medium">{value}</span>
                   </div>
                 ))}
               </div>

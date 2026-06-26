@@ -63,15 +63,15 @@ export default function EstadioDetallePage({ params }: { params: Promise<{ id: s
 
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
-      <Link href="/admin/estadios" className="inline-flex items-center gap-1 text-sm text-slate-400 hover:text-white mb-6 transition-colors">
+      <Link href="/admin/estadios" className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-900 mb-6 transition-colors">
         <ChevronLeft className="h-4 w-4" /> Estadios
       </Link>
 
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white">{estadio?.nombre ?? 'Estadio'}</h1>
+          <h1 className="text-3xl font-bold text-slate-800">{estadio?.nombre ?? 'Estadio'}</h1>
           {estadio && (
-            <p className="text-slate-400 mt-1">{estadio.ciudad}, {estadio.pais}</p>
+            <p className="text-slate-600 mt-1">{estadio.ciudad}, {estadio.pais}</p>
           )}
         </div>
         <Dialog open={open} onOpenChange={setOpen}>

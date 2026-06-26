@@ -75,8 +75,8 @@ export default function AdminEventosPage() {
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white">Eventos</h1>
-          <p className="text-slate-400 mt-1">Partidos del Mundial 2026</p>
+          <h1 className="text-3xl font-bold text-slate-800">Eventos</h1>
+          <p className="text-slate-600 mt-1">Partidos del Mundial 2026</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
