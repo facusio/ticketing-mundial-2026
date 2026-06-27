@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Geist } from 'next/font/google'
 import { Bebas_Neue } from 'next/font/google'
 import { Navbar } from '@/components/navbar'
+import { NavbarWrapper } from '@/components/navbar-wrapper'
 import './globals.css'
 
 const geist = Geist({
@@ -24,7 +25,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es" className={`${geist.variable} ${bebas.variable} h-full`}>
       <body className="min-h-screen bg-slate-100 text-slate-900 antialiased flex flex-col">
-        <Navbar />
+        <NavbarWrapper>
+          <Navbar />
+        </NavbarWrapper>
         <main className="flex-1">{children}</main>
       </body>
     </html>

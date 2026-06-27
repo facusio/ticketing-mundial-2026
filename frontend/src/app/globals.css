@@ -7,7 +7,7 @@
   --color-border: #334155;
   --color-text-primary: #0f172a;
   --color-text-muted: #64748b;
-  --color-accent-green: #22c55e;
+  --color-accent-blue: #0066b2;
   --color-accent-gold: #f59e0b;
   --font-sans: var(--font-geist-sans);
   --font-display: var(--font-bebas);
@@ -25,7 +25,7 @@ body {
 }
 
 /* Hover border cycle para cards de entradas */
-.hbc-green:hover { border-color: #22c55e !important; border-width: 2px !important; }
+.hbc-green:hover { border-color: #0066b2 !important; border-width: 2px !important; }
 .hbc-blue:hover  { border-color: #3b82f6 !important; border-width: 2px !important; }
 .hbc-red:hover   { border-color: #ef4444 !important; border-width: 2px !important; }
 

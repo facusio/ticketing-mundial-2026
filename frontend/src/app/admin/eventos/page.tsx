@@ -143,7 +143,7 @@ export default function AdminEventosPage() {
         <CardContent className="pt-0">
           {loading ? (
             <div className="py-8 flex justify-center">
-              <div className="animate-spin rounded-full h-6 w-6 border-2 border-green-500 border-t-transparent" />
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#0066b2] border-t-transparent" />
             </div>
           ) : eventos.length === 0 ? (
             <p className="text-slate-400 text-sm py-4">No hay eventos registrados.</p>

@@ -139,13 +139,13 @@ export default function RegisterPage() {
             <div key={s} className="flex items-center gap-2">
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
-                  i <= step ? 'bg-green-500 text-white' : 'bg-slate-200 text-slate-500'
+                  i <= step ? 'bg-[#0066b2] text-white' : 'bg-slate-200 text-slate-500'
                 }`}
               >
                 {i + 1}
               </div>
               {i < STEPS.length - 1 && (
-                <div className={`w-8 h-0.5 ${i < step ? 'bg-green-500' : 'bg-slate-200'}`} />
+                <div className={`w-8 h-0.5 ${i < step ? 'bg-[#0066b2]' : 'bg-slate-200'}`} />
               )}
             </div>
           ))}
@@ -286,7 +286,7 @@ export default function RegisterPage() {
             {step === 0 && (
               <p className="text-center text-sm text-slate-400">
                 ¿Ya tenés cuenta?{' '}
-                <Link href="/login" className="text-green-400 hover:text-green-300 font-medium">
+                <Link href="/login" className="text-[#4da3e8] hover:text-[#7bbfff] font-medium">
                   Iniciá sesión
                 </Link>
               </p>

@@ -86,7 +86,7 @@ export default function EventoDetallePage({
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-green-500 border-t-transparent" />
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#0066b2] border-t-transparent" />
       </div>
     )
   }
@@ -95,7 +95,7 @@ export default function EventoDetallePage({
     return (
       <div className="mx-auto max-w-lg px-4 py-16 text-center">
         <div className="text-6xl mb-4">🎉</div>
-        <h1 className="text-2xl font-bold text-green-400 mb-2">¡Compra exitosa!</h1>
+        <h1 className="text-2xl font-bold text-[#4da3e8] mb-2">¡Compra exitosa!</h1>
         <p className="text-slate-400 mb-6">
           Tus entradas fueron procesadas. Podés verlas en &quot;Mis Entradas&quot;.
         </p>
@@ -134,16 +134,16 @@ export default function EventoDetallePage({
           </div>
           <div className="flex items-center justify-center gap-6 my-4">
             <span className="text-2xl md:text-3xl font-bold text-white">{evento.equipoLocal}</span>
-            <span className="text-3xl font-bold text-green-400">VS</span>
+            <span className="text-3xl font-bold text-[#4da3e8]">VS</span>
             <span className="text-2xl md:text-3xl font-bold text-white">{evento.equipoVisitante}</span>
           </div>
           <div className="flex flex-wrap gap-4 mt-4 text-sm text-slate-400">
             <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-green-400" />
+              <MapPin className="h-4 w-4 text-[#4da3e8]" />
               {evento.estadio.nombre} — {evento.estadio.ciudad}, {evento.estadio.pais}
             </div>
             <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-green-400" />
+              <Calendar className="h-4 w-4 text-[#4da3e8]" />
               {formatDate(evento.fechaHora)}
             </div>
           </div>
@@ -157,7 +157,7 @@ export default function EventoDetallePage({
           <p className="text-sm text-slate-400 mt-1">
             Podés comprar hasta 5 entradas en total.{' '}
             {totalEntradas > 0 && (
-              <span className="text-green-400 font-medium">{totalEntradas}/5 seleccionadas</span>
+              <span className="text-[#4da3e8] font-medium">{totalEntradas}/5 seleccionadas</span>
             )}
           </p>
         </CardHeader>
@@ -191,7 +191,7 @@ export default function EventoDetallePage({
                     <button
                       onClick={() => increment(precio.sectorId)}
                       disabled={totalEntradas >= 5}
-                      className="p-1 rounded-full text-slate-500 hover:text-green-600 hover:bg-slate-200 disabled:opacity-30 transition-colors"
+                      className="p-1 rounded-full text-slate-500 hover:text-[#0066b2] hover:bg-slate-200 disabled:opacity-30 transition-colors"
                     >
                       <Plus className="h-4 w-4" />
                     </button>

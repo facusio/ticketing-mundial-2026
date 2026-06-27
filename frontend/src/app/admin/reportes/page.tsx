@@ -20,14 +20,46 @@ export default function ReportesPage() {
     async function load() {
       setLoading(true)
       try {
-        const [ev, comp, func] = await Promise.all([
-          api.get<ReporteEvento[]>('/api/admin/reportes/ranking-eventos').catch(() => []),
-          api.get<ReporteComprador[]>('/api/admin/reportes/ranking-compradores').catch(() => []),
-          api.get<ReporteFuncionario[]>('/api/admin/reportes/auditoria-funcionarios').catch(() => []),
+        const [rawEv, rawComp, rawFunc] = await Promise.all([
+          api.get<any[]>('/api/admin/reportes/ranking-eventos').catch(() => []),
+          api.get<any[]>('/api/admin/reportes/ranking-compradores').catch(() => []),
+          api.get<any[]>('/api/admin/reportes/auditoria-funcionarios').catch(() => []),
         ])
-        setEventos(ev)
-        setCompradores(comp)
-        setFuncionarios(func)
+
+        setEventos(rawEv.map((e) => ({
+          eventoId: e.evento_id,
+          equipoLocal: e.equipo_local ?? '',
+          equipoVisitante: e.equipo_visitante ?? '',
+          estadioNombre: e.estadio ?? '',
+          totalEntradas: Number(e.total_entradas_vendidas ?? 0),
+          montoTotal: Number(e.recaudacion_total ?? 0),
+        })))
+
+        setCompradores(rawComp.map((c) => ({
+          usuarioId: c.usuario_id,
+          mail: c.mail ?? '',
+          totalEntradas: Number(c.total_entradas_compradas ?? 0),
+          montoTotal: Number(c.total_gastado ?? 0),
+        })))
+
+        // La vista devuelve una fila por (funcionario, sector) — se agregan aquí
+        const funcMap = new Map<number, ReporteFuncionario>()
+        for (const f of rawFunc) {
+          const id = Number(f.funcionario_id)
+          if (funcMap.has(id)) {
+            const existing = funcMap.get(id)!
+            existing.sectoresAsignados += 1
+            existing.validacionesRealizadas += Number(f.validaciones_realizadas ?? 0)
+          } else {
+            funcMap.set(id, {
+              funcionarioId: id,
+              mail: f.funcionario_mail ?? '',
+              sectoresAsignados: 1,
+              validacionesRealizadas: Number(f.validaciones_realizadas ?? 0),
+            })
+          }
+        }
+        setFuncionarios(Array.from(funcMap.values()))
       } finally {
         setLoading(false)
       }
@@ -38,7 +70,7 @@ export default function ReportesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-green-500 border-t-transparent" />
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#0066b2] border-t-transparent" />
       </div>
     )
   }
@@ -83,9 +115,9 @@ export default function ReportesPage() {
                       <Tooltip
                         contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px' }}
                         labelStyle={{ color: '#f1f5f9' }}
-                        itemStyle={{ color: '#22c55e' }}
+                        itemStyle={{ color: '#4da3e8' }}
                       />
-                      <Bar dataKey="totalEntradas" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="totalEntradas" fill="#0066b2" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -113,7 +145,7 @@ export default function ReportesPage() {
                           <TableCell className="text-amber-400 font-bold">{i + 1}</TableCell>
                           <TableCell className="font-medium">{ev.equipoLocal} vs {ev.equipoVisitante}</TableCell>
                           <TableCell className="text-slate-400">{ev.estadioNombre}</TableCell>
-                          <TableCell className="text-green-400 font-semibold">{ev.totalEntradas}</TableCell>
+                          <TableCell className="text-[#0066b2] font-semibold">{ev.totalEntradas}</TableCell>
                           <TableCell>{formatCurrency(ev.montoTotal)}</TableCell>
                         </TableRow>
                       ))}
@@ -146,7 +178,7 @@ export default function ReportesPage() {
                       <TableRow key={c.usuarioId}>
                         <TableCell className="text-amber-400 font-bold">{i + 1}</TableCell>
                         <TableCell>{c.mail}</TableCell>
-                        <TableCell className="text-green-400 font-semibold">{c.totalEntradas}</TableCell>
+                        <TableCell className="text-[#0066b2] font-semibold">{c.totalEntradas}</TableCell>
                         <TableCell>{formatCurrency(c.montoTotal)}</TableCell>
                       </TableRow>
                     ))}
@@ -177,7 +209,7 @@ export default function ReportesPage() {
                       <TableRow key={f.funcionarioId}>
                         <TableCell>{f.mail}</TableCell>
                         <TableCell className="text-blue-400">{f.sectoresAsignados}</TableCell>
-                        <TableCell className="text-green-400 font-semibold">{f.validacionesRealizadas}</TableCell>
+                        <TableCell className="text-[#0066b2] font-semibold">{f.validacionesRealizadas}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

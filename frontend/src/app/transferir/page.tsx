@@ -86,9 +86,9 @@ export default function TransferirPage() {
       </div>
 
       {actionMsg && (
-        <div className="rounded-lg bg-green-500/10 border border-green-500/30 px-4 py-3 text-sm text-green-400 flex items-center justify-between">
+        <div className="rounded-lg bg-[#0066b2]/10 border border-[#0066b2]/30 px-4 py-3 text-sm text-[#4da3e8] flex items-center justify-between">
           {actionMsg}
-          <button onClick={() => setActionMsg('')} className="text-green-600 hover:text-green-300">
+          <button onClick={() => setActionMsg('')} className="text-[#0066b2] hover:text-[#4da3e8]">
             <X className="h-4 w-4" />
           </button>
         </div>

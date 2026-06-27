@@ -41,17 +41,17 @@ export default async function DashboardPage() {
       {/* Acciones rápidas */}
       <div className="grid grid-cols-2 gap-4 mb-8">
         <Link href="/eventos">
-          <Card className="hover:border-green-400 hover:bg-green-50 transition-all cursor-pointer">
+          <Card className="hover:border-[#0066b2]/50 hover:bg-blue-50 transition-all cursor-pointer">
             <CardContent className="flex flex-col items-center justify-center py-6 gap-3">
-              <ShoppingCart className="h-8 w-8 text-green-500" />
+              <ShoppingCart className="h-8 w-8 text-[#0066b2]" />
               <span className="text-sm font-medium text-slate-700">Comprar entradas</span>
             </CardContent>
           </Card>
         </Link>
         <Link href="/mis-entradas">
-          <Card className="hover:border-green-400 hover:bg-green-50 transition-all cursor-pointer">
+          <Card className="hover:border-[#0066b2]/50 hover:bg-blue-50 transition-all cursor-pointer">
             <CardContent className="flex flex-col items-center justify-center py-6 gap-3">
-              <Ticket className="h-8 w-8 text-green-500" />
+              <Ticket className="h-8 w-8 text-[#0066b2]" />
               <span className="text-sm font-medium text-slate-700">Ver mis entradas</span>
             </CardContent>
           </Card>
@@ -110,27 +110,27 @@ export default async function DashboardPage() {
           )}
 
           <div className="grid grid-cols-3 gap-3">
-            <Card className="bg-green-50 border-green-200">
+            <Card>
               <CardContent className="flex flex-col items-center justify-center py-4 px-3 gap-1">
-                <Ticket className="h-5 w-5 text-green-600" />
+                <Ticket className="h-5 w-5 text-[#0066b2]" />
                 <p className="text-xl font-bold text-slate-800">{entradasActivas.length}</p>
-                <p className="text-xs text-green-700 text-center leading-tight">Entradas activas</p>
+                <p className="text-xs text-[#0066b2] text-center leading-tight">Entradas activas</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-amber-50 border-amber-200">
+            <Card>
               <CardContent className="flex flex-col items-center justify-center py-4 px-3 gap-1">
-                <ArrowRightLeft className="h-5 w-5 text-amber-600" />
+                <ArrowRightLeft className="h-5 w-5 text-amber-500" />
                 <p className="text-xl font-bold text-slate-800">{transferenciasPendientes.length}</p>
-                <p className="text-xs text-amber-700 text-center leading-tight">Transferencias</p>
+                <p className="text-xs text-amber-500 text-center leading-tight">Transferencias</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-blue-50 border-blue-200">
+            <Card>
               <CardContent className="flex flex-col items-center justify-center py-4 px-3 gap-1">
-                <Calendar className="h-5 w-5 text-blue-600" />
+                <Calendar className="h-5 w-5 text-[#0066b2]" />
                 <p className="text-xl font-bold text-slate-800">{(eventos ?? []).length}</p>
-                <p className="text-xs text-blue-700 text-center leading-tight">Próx. eventos</p>
+                <p className="text-xs text-slate-500 text-center leading-tight">Próx. eventos</p>
               </CardContent>
             </Card>
           </div>
@@ -152,7 +152,7 @@ export default async function DashboardPage() {
                       <span className="text-sm font-medium text-slate-800">
                         {e.evento.equipoLocal} vs {e.evento.equipoVisitante}
                       </span>
-                      <Badge variant="green">{e.sector.codigo}</Badge>
+                      <Badge variant="blue">{e.sector.codigo}</Badge>
                     </div>
                     <p className="text-xs text-slate-500 mt-1">
                       {e.evento.estadioNombre} · {formatCurrency(e.precio)} · Ver QR →

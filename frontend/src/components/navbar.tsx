@@ -49,7 +49,7 @@ export async function Navbar() {
             <Link href="/" className="flex items-center gap-2">
               <img src="/logo-mundial.png" alt="FIFA World Cup 2026" className="h-8 w-auto" />
               <span className="font-bold text-slate-800 text-lg">
-                Mundial <span className="text-green-600">2026</span>
+                Mundial <span className="text-[#0066b2]">2026</span>
               </span>
             </Link>
 
@@ -67,7 +67,7 @@ export async function Navbar() {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="hidden sm:inline-flex items-center rounded-full bg-green-50 border border-green-200 px-3 py-1 text-xs font-semibold text-green-700">
+            <span className="hidden sm:inline-flex items-center rounded-full bg-[#0066b2]/10 border border-[#0066b2]/30 px-3 py-1 text-xs font-semibold text-[#0066b2]">
               {rolLabel[rol]}
             </span>
             <LogoutButton />

@@ -120,19 +120,19 @@ export default function ValidarPage() {
       {/* Resultado success */}
       {state === 'success' && result && (
         <div className="space-y-4">
-          <div className="rounded-2xl bg-green-500/10 border-2 border-green-500 p-8 text-center">
-            <CheckCircle className="h-16 w-16 text-green-400 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-green-400 mb-2">ACCESO PERMITIDO</h2>
+          <div className="rounded-2xl bg-[#0066b2]/10 border-2 border-[#0066b2] p-8 text-center">
+            <CheckCircle className="h-16 w-16 text-[#4da3e8] mx-auto mb-4" />
+            <h2 className="text-3xl font-bold text-[#4da3e8] mb-2">ACCESO PERMITIDO</h2>
             {result.entrada && (
               <div className="mt-4 space-y-1 text-sm text-slate-300">
                 {result.entrada.eventoNombre && <p>{result.entrada.eventoNombre}</p>}
                 {result.entrada.sector && (
-                  <p className="font-medium text-green-300">Sector: {result.entrada.sector}</p>
+                  <p className="font-medium text-blue-300">Sector: {result.entrada.sector}</p>
                 )}
                 {result.entrada.propietario && <p>Propietario: {result.entrada.propietario}</p>}
               </div>
             )}
-            <p className="mt-3 text-green-300">{result.mensaje}</p>
+            <p className="mt-3 text-blue-300">{result.mensaje}</p>
           </div>
           <Button className="w-full" size="lg" onClick={startScan}>
             <Camera className="h-5 w-5" /> Escanear siguiente
@@ -158,7 +158,7 @@ export default function ValidarPage() {
       {state === 'validating' && (
         <Card>
           <CardContent className="py-16 flex flex-col items-center gap-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-3 border-green-500 border-t-transparent" />
+            <div className="animate-spin rounded-full h-12 w-12 border-3 border-[#0066b2] border-t-transparent" />
             <p className="text-slate-300 font-medium">Validando código...</p>
           </CardContent>
         </Card>
@@ -199,7 +199,7 @@ export default function ValidarPage() {
       {/* Scanner activo */}
       {state === 'scanning' && scanning && (
         <div className="space-y-4">
-          <div className="relative rounded-2xl overflow-hidden border-2 border-green-500 bg-black aspect-square">
+          <div className="relative rounded-2xl overflow-hidden border-2 border-[#0066b2] bg-black aspect-square">
             <Scanner
               onScan={handleScan}
               onError={handleError}
@@ -207,7 +207,7 @@ export default function ValidarPage() {
               formats={['qr_code']}
             />
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-48 h-48 border-2 border-green-400 rounded-lg opacity-70" />
+              <div className="w-48 h-48 border-2 border-[#4da3e8] rounded-lg opacity-70" />
             </div>
           </div>
           <div className="text-center">

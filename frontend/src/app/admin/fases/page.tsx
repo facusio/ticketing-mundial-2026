@@ -123,7 +123,7 @@ export default function FasesPage() {
         <CardContent className="pt-0">
           {loading ? (
             <div className="py-6 flex justify-center">
-              <div className="animate-spin rounded-full h-6 w-6 border-2 border-green-500 border-t-transparent" />
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#0066b2] border-t-transparent" />
             </div>
           ) : fases.length === 0 ? (
             <p className="text-slate-400 text-sm py-4">No hay fases registradas.</p>
@@ -152,7 +152,7 @@ export default function FasesPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5 text-green-400" /> Definir precio por sector-fase
+            <DollarSign className="h-5 w-5 text-[#0066b2]" /> Definir precio por sector-fase
           </CardTitle>
           <Dialog open={openPrecio} onOpenChange={(o) => { setOpenPrecio(o); setError('') }}>
             <DialogTrigger asChild>
@@ -164,7 +164,7 @@ export default function FasesPage() {
                 <div>
                   <Label>Fase</Label>
                   <select
-                    className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0066b2]"
                     value={precioForm.faseId}
                     onChange={(e) => setPrecioForm((f) => ({ ...f, faseId: e.target.value }))}
                   >
@@ -175,7 +175,7 @@ export default function FasesPage() {
                 <div>
                   <Label>Estadio</Label>
                   <select
-                    className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0066b2]"
                     value={precioForm.estadioId}
                     onChange={(e) => {
                       setPrecioForm((f) => ({ ...f, estadioId: e.target.value, sectorId: '' }))
@@ -190,7 +190,7 @@ export default function FasesPage() {
                   <div>
                     <Label>Sector</Label>
                     <select
-                      className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0066b2]"
                       value={precioForm.sectorId}
                       onChange={(e) => setPrecioForm((f) => ({ ...f, sectorId: e.target.value }))}
                     >

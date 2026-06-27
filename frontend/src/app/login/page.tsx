@@ -3,17 +3,14 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { AlertCircle, ArrowLeftRight, Eye, EyeOff, Lock, Mail, Smartphone, Ticket } from 'lucide-react'
+import { AlertCircle, Eye, EyeOff, Lock, Mail } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { LoadingBall } from '@/components/loading-ball'
 
-const FEATURES = [
-  { icon: Ticket, text: 'Comprá entradas al instante' },
-  { icon: Smartphone, text: 'QR dinámico de acceso' },
-  { icon: ArrowLeftRight, text: 'Transferencias entre usuarios' },
-]
+/* Forma angular deportiva — esquinas derechas cortadas en diagonal */
+const CLIP = 'polygon(0 0, calc(100% - 40px) 0, 100% 40px, 100% calc(100% - 40px), calc(100% - 40px) 100%, 0 100%)'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -39,9 +36,9 @@ export default function LoginPage() {
         return
       }
       const data = (await res.json()) as { rol: string }
-      if (data.rol === 'ADMIN_PAIS') router.push('/admin')
-      else if (data.rol === 'FUNCIONARIO') router.push('/validar')
-      else router.push('/dashboard')
+      if (data.rol === 'ADMIN_PAIS') window.location.href = '/admin'
+      else if (data.rol === 'FUNCIONARIO') window.location.href = '/validar'
+      else window.location.href = '/dashboard'
     } catch {
       setError('Error de conexión. Verificá que el servidor esté activo.')
     } finally {
@@ -50,151 +47,145 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex">
-      {/* ── Panel izquierdo — Branding ── */}
-      <div
-        className="hidden md:flex flex-col w-[45%] relative overflow-hidden"
-        style={{ background: 'linear-gradient(160deg, #052e16 0%, #064e3b 40%, #0a0f1a 100%)' }}
-      >
-        {/* Glow decorativo */}
-        <div
-          className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[28rem] h-[28rem] rounded-full opacity-25 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #22c55e 0%, transparent 70%)' }}
-        />
+    <div
+      className="min-h-screen flex items-center justify-center relative"
+      style={{ backgroundImage: "url('/bg-login.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+    >
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/55" />
 
-        <div className="relative flex flex-col h-full px-12 py-16">
-          {/* Badge superior */}
-          <div className="flex items-center gap-2.5">
-            <img src="/logo-mundial.png" alt="FIFA World Cup 2026" className="h-8 w-auto" />
-            <span className="text-slate-400 text-xs font-medium tracking-[0.2em] uppercase">
-              Ticketing Oficial
-            </span>
-          </div>
-
-          {/* Tipografía principal */}
-          <div className="flex-1 flex flex-col justify-center">
-            <p
-              className="font-display text-white leading-none select-none"
-              style={{ fontSize: '6.5rem' }}
-            >
-              MUNDIAL
-            </p>
-            <p
-              className="font-display leading-none select-none"
-              style={{ fontSize: '6.5rem', color: '#f59e0b' }}
-            >
-              2026
-            </p>
-            <p className="mt-6 text-slate-400 text-base max-w-xs leading-relaxed">
-              La plataforma oficial para gestionar tus entradas al evento más
-              grande del fútbol mundial.
-            </p>
-
-            {/* Features */}
-            <div className="mt-12 space-y-4">
-              {FEATURES.map(({ icon: Icon, text }) => (
-                <div key={text} className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-green-500/20 border border-green-500/30 flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-4 h-4 text-green-400" />
-                  </div>
-                  <span className="text-slate-300 text-sm">{text}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <p className="text-slate-700 text-xs">© UCU · Bases de Datos II · 2026</p>
-        </div>
-      </div>
-
-      {/* ── Panel derecho — Formulario ── */}
-      <div className="flex-1 flex flex-col justify-center px-8 py-16 md:px-16">
-        <div className="w-full max-w-md mx-auto">
-          {/* Logo mobile */}
-          <div className="md:hidden flex items-center gap-2 mb-10">
-            <img src="/logo-mundial.png" alt="FIFA World Cup 2026" className="h-8 w-auto" />
-            <span className="text-slate-800 font-bold text-lg">Mundial 2026</span>
-          </div>
-
-          {/* Encabezado */}
-          <div className="mb-10">
-            <h2 className="text-3xl font-bold text-slate-800">Bienvenido de vuelta</h2>
-            <p className="mt-2 text-slate-600 text-sm">
-              Ingresá tus credenciales para continuar
+      {/* Tagline izquierda — absoluta, solo desktop */}
+      <div className="absolute left-0 top-0 bottom-0 hidden lg:flex flex-col justify-center px-16 w-[38%] z-10 pointer-events-none">
+        {/* Bloque FIFA estilo logo */}
+        <div className="inline-flex flex-col items-start">
+          <div className="bg-[#0066b2] px-4 py-1 mb-1">
+            <p className="font-display text-white select-none leading-none tracking-widest" style={{ fontSize: '5rem' }}>
+              FIFA
             </p>
           </div>
-
-          {/* Formulario */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email */}
-            <div className="space-y-1.5">
-              <Label htmlFor="mail" className="text-slate-700">Correo electrónico</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                <Input
-                  id="mail"
-                  type="email"
-                  placeholder="tu@email.com"
-                  value={mail}
-                  onChange={(e) => setMail(e.target.value)}
-                  required
-                  autoComplete="email"
-                  className="pl-10"
-                />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-slate-700">Contraseña</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  autoComplete="current-password"
-                  className="pl-10 pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                  tabIndex={-1}
-                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            {/* Error */}
-            {error && (
-              <div className="flex items-start gap-2.5 rounded-lg bg-red-500/10 border border-red-500/30 px-4 py-3 text-sm text-red-400">
-                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <span>{error}</span>
-              </div>
-            )}
-
-            <Button type="submit" className="w-full" size="lg" loading={loading}>
-              {!loading && 'Ingresar'}
-            </Button>
-          </form>
-
-          <p className="mt-8 text-center text-sm text-slate-500">
-            ¿No tenés cuenta?{' '}
-            <Link
-              href="/register"
-              className="text-green-400 hover:text-green-300 font-medium transition-colors"
-            >
-              Registrate acá
-            </Link>
+          <p className="font-display text-white select-none leading-none tracking-widest" style={{ fontSize: '3.8rem' }}>
+            WORLD CUP
+          </p>
+          <p className="font-display select-none leading-none tracking-widest" style={{ fontSize: '3.8rem', color: '#f59e0b' }}>
+            2026™
           </p>
         </div>
+        <div className="mt-3 w-16 h-1 bg-[#0066b2]" />
+        <p className="mt-5 text-white/55 text-sm max-w-xs leading-relaxed">
+          La plataforma oficial para gestionar tus entradas al evento más grande del fútbol.
+        </p>
       </div>
+
+      {/* Card — zona oscura derecha del balón */}
+      <div className="relative z-10 py-12 px-6 lg:translate-x-[90%]">
+
+        {/* Borde exterior (1 px degradado) */}
+        <div
+          style={{
+            clipPath: CLIP,
+            background: 'linear-gradient(145deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.04) 100%)',
+            padding: '1px',
+          }}
+        >
+          {/* Card interior */}
+          <div
+            className="w-full sm:w-[480px] px-12 py-16 min-h-[720px] flex flex-col justify-between"
+            style={{
+              clipPath: CLIP,
+              background: 'rgba(6, 10, 24, 0.52)',
+              backdropFilter: 'blur(28px)',
+              WebkitBackdropFilter: 'blur(28px)',
+            }}
+          >
+            {/* Logo + título centrado */}
+            <div className="flex flex-col items-center">
+              <img src="/logo-mundial.png" alt="FIFA World Cup 2026" className="h-14 w-auto mb-5" />
+              <h2 className="text-3xl font-bold text-white tracking-tight">Ingresá</h2>
+              <p className="text-white/40 text-sm mt-2 text-center">
+                Accedé a tus entradas del Mundial
+              </p>
+            </div>
+
+            {/* Separador decorativo verde */}
+            <div className="flex items-center gap-2">
+              <div className="flex-1 h-px bg-white/10" />
+              <div className="w-8 h-0.5 bg-[#0066b2]" />
+              <div className="flex-1 h-px bg-white/10" />
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Email */}
+              <div className="space-y-2">
+                <Label className="text-white/50 text-xs font-semibold tracking-widest uppercase">
+                  Correo electrónico
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/25 pointer-events-none" />
+                  <Input
+                    id="mail"
+                    type="email"
+                    placeholder="tu@email.com"
+                    value={mail}
+                    onChange={(e) => setMail(e.target.value)}
+                    required
+                    autoComplete="email"
+                    className="pl-10 py-3 bg-white/5 border-white/15 text-white placeholder:text-white/20 focus:ring-0 focus:border-[#0066b2]"
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div className="space-y-2">
+                <Label className="text-white/50 text-xs font-semibold tracking-widest uppercase">
+                  Contraseña
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/25 pointer-events-none" />
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    autoComplete="current-password"
+                    className="pl-10 pr-10 py-3 bg-white/5 border-white/15 text-white placeholder:text-white/20 focus:ring-0 focus:border-[#0066b2]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 z-10 text-white/30 hover:text-white/70 transition-colors"
+                    tabIndex={-1}
+                    aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Error */}
+              {error && (
+                <div className="flex items-start gap-2.5 rounded-lg bg-red-500/15 border border-red-400/25 px-4 py-3 text-sm text-red-300">
+                  <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <Button type="submit" className="w-full py-3 bg-[#0066b2] hover:bg-[#0052a3] active:bg-[#003d7a] focus-visible:ring-[#0066b2]" size="lg" loading={loading}>
+                {!loading && 'Ingresar'}
+              </Button>
+            </form>
+
+            <p className="text-center text-sm text-white/35">
+              ¿No tenés cuenta?{' '}
+              <Link href="/register" className="text-[#5bb3f0] hover:text-[#82c8f8] font-medium transition-colors">
+                Registrate acá
+              </Link>
+            </p>
+          </div>
+        </div>
+      </div>
+
       {loading && <LoadingBall />}
     </div>
   )

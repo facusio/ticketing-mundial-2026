@@ -21,11 +21,11 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={cn(
-          'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer',
+          'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066b2] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer',
           {
-            'bg-green-500 text-white hover:bg-green-600 active:bg-green-700':
+            'bg-[#0066b2] text-white hover:bg-[#0052a3] active:bg-[#003d7a]':
               variant === 'default',
-            'border border-slate-600 bg-transparent text-slate-200 hover:bg-slate-700':
+            'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-400':
               variant === 'outline',
             'bg-transparent text-slate-300 hover:bg-slate-800 hover:text-white':
               variant === 'ghost',

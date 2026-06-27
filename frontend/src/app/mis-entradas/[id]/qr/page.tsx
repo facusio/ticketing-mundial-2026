@@ -78,12 +78,12 @@ export default function QrPage({ params }: { params: Promise<{ id: string }> }) 
           </div>
         ) : loading && !qr ? (
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-10 w-10 border-2 border-green-500 border-t-transparent" />
+            <div className="animate-spin rounded-full h-10 w-10 border-2 border-[#0066b2] border-t-transparent" />
           </div>
         ) : qr ? (
           <div className="space-y-6">
             {/* QR Code */}
-            <div className="inline-block p-5 bg-white rounded-2xl shadow-2xl shadow-green-500/20">
+            <div className="inline-block p-5 bg-white rounded-2xl shadow-2xl shadow-[#0066b2]/20">
               <QRCodeSVG
                 value={qr.codigo}
                 size={220}
@@ -95,15 +95,15 @@ export default function QrPage({ params }: { params: Promise<{ id: string }> }) 
             {/* Countdown */}
             <div className="space-y-2">
               <div className="flex items-center justify-center gap-2 text-sm">
-                <Clock className="h-4 w-4 text-green-400" />
-                <span className={`font-mono font-bold text-lg ${secondsLeft <= 5 ? 'text-red-400' : 'text-green-400'}`}>
+                <Clock className="h-4 w-4 text-[#4da3e8]" />
+                <span className={`font-mono font-bold text-lg ${secondsLeft <= 5 ? 'text-red-400' : 'text-[#4da3e8]'}`}>
                   {secondsLeft}s
                 </span>
                 <span className="text-slate-400">hasta regenerar</span>
               </div>
               <Progress
                 value={progress}
-                indicatorClassName={secondsLeft <= 5 ? 'bg-red-500' : 'bg-green-500'}
+                indicatorClassName={secondsLeft <= 5 ? 'bg-red-500' : 'bg-[#0066b2]'}
               />
               <p className="text-xs text-slate-500">El código se regenera automáticamente cada 30 segundos</p>
             </div>

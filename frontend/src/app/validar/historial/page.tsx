@@ -79,11 +79,11 @@ export default async function HistorialPage() {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           {esValida ? (
-                            <CheckCircle className="h-4 w-4 text-green-400" />
+                            <CheckCircle className="h-4 w-4 text-[#4da3e8]" />
                           ) : (
                             <XCircle className="h-4 w-4 text-red-400" />
                           )}
-                          <Badge variant={esValida ? 'green' : 'red'}>
+                          <Badge variant={esValida ? 'blue' : 'red'}>
                             {v.resultado}
                           </Badge>
                         </div>

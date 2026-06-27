@@ -123,7 +123,7 @@ export default function EstadioDetallePage({ params }: { params: Promise<{ id: s
         <CardContent className="pt-0">
           {loading ? (
             <div className="py-8 flex justify-center">
-              <div className="animate-spin rounded-full h-6 w-6 border-2 border-green-500 border-t-transparent" />
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#0066b2] border-t-transparent" />
             </div>
           ) : sectores.length === 0 ? (
             <p className="text-slate-400 text-sm py-4">No hay sectores registrados en este estadio.</p>
@@ -138,7 +138,7 @@ export default function EstadioDetallePage({ params }: { params: Promise<{ id: s
               <TableBody>
                 {sectores.map((s) => (
                   <TableRow key={s.id}>
-                    <TableCell className="font-medium text-green-400">{s.codigo}</TableCell>
+                    <TableCell className="font-medium text-[#0066b2]">{s.codigo}</TableCell>
                     <TableCell>{s.capacidadMaxima.toLocaleString()}</TableCell>
                   </TableRow>
                 ))}
