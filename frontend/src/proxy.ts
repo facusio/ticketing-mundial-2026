@@ -7,11 +7,13 @@ const ROLE_PATHS: Record<Rol, string[]> = {
   USUARIO_GENERAL: ['/dashboard', '/eventos', '/mis-entradas', '/transferir'],
   ADMIN_PAIS: ['/admin'],
   FUNCIONARIO: ['/validar'],
+  SUPERADMIN: ['/superadmin'],
 }
 
 function getHomeForRole(rol: Rol): string {
   if (rol === 'ADMIN_PAIS') return '/admin'
   if (rol === 'FUNCIONARIO') return '/validar'
+  if (rol === 'SUPERADMIN') return '/superadmin'
   return '/dashboard'
 }
 

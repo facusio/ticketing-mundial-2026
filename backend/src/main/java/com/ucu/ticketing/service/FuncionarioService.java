@@ -87,6 +87,7 @@ public class FuncionarioService {
         Usuario propietario = entrada.getPropietarioActual();
 
         return ValidacionResponse.builder()
+                .valida(true)
                 .mensaje("ACCESO PERMITIDO")
                 .entradaId(entrada.getId())
                 .fechaValidacion(ahora)
@@ -115,6 +116,7 @@ public class FuncionarioService {
                 .map(vt -> {
                     Usuario propietario = vt.getEntrada().getPropietarioActual();
                     return ValidacionResponse.builder()
+                            .valida(true)
                             .entradaId(vt.getEntrada().getId())
                             .fechaValidacion(vt.getFechaHora())
                             .propietario(ValidacionResponse.PropietarioDto.builder()

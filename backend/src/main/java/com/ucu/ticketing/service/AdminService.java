@@ -3,6 +3,7 @@ package com.ucu.ticketing.service;
 import com.ucu.ticketing.dto.request.*;
 import com.ucu.ticketing.dto.response.EstadioResponse;
 import com.ucu.ticketing.dto.response.EventoResponse;
+import com.ucu.ticketing.dto.response.SectorResponse;
 import com.ucu.ticketing.exception.RecursoNoEncontradoException;
 import com.ucu.ticketing.exception.ReglaNegocioException;
 import com.ucu.ticketing.model.Estadio;
@@ -117,6 +118,21 @@ public class AdminService {
                 .collect(Collectors.toList());
     }
 
+    public List<Fase> getFases() {
+        return faseRepository.findAll();
+    }
+
+    public List<SectorResponse> getSectoresByEstadio(Long estadioId) {
+        return sectorRepository.findByEstadioId(estadioId)
+                .stream()
+                .map(s -> SectorResponse.builder()
+                        .id(s.getId())
+                        .codigo(s.getCodigo())
+                        .capacidadMaxima(s.getCapacidadMaxima())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public Fase crearFase(FaseRequest req) {
         Long id = faseRepository.insert(req.getNombre(), req.getOrden());
@@ -160,15 +176,49 @@ public class AdminService {
     }
 
     public List<Map<String, Object>> getRankingEventos() {
-        return jdbcTemplate.queryForList("SELECT * FROM ticketing.v_ranking_eventos");
+        return jdbcTemplate.queryForList("""
+            SELECT ev.id                       AS "eventoId",
+                   ev.equipo_local             AS "equipoLocal",
+                   ev.equipo_visitante         AS "equipoVisitante",
+                   est.nombre                  AS "estadioNombre",
+                   COUNT(en.id)                AS "totalEntradas",
+                   COALESCE(SUM(en.precio), 0) AS "montoTotal"
+            FROM ticketing.evento ev
+            JOIN ticketing.estadio est ON est.id = ev.estadio_id
+            LEFT JOIN ticketing.entrada en ON en.evento_id = ev.id
+            GROUP BY ev.id, ev.equipo_local, ev.equipo_visitante, est.nombre
+            ORDER BY COUNT(en.id) DESC
+            """);
     }
 
     public List<Map<String, Object>> getRankingCompradores() {
-        return jdbcTemplate.queryForList("SELECT * FROM ticketing.v_ranking_compradores");
+        return jdbcTemplate.queryForList("""
+            SELECT u.id                        AS "usuarioId",
+                   u.mail                      AS "mail",
+                   COUNT(en.id)                AS "totalEntradas",
+                   COALESCE(SUM(en.precio), 0) AS "montoTotal"
+            FROM ticketing.usuario u
+            JOIN ticketing.usuario_general ug ON ug.usuario_id = u.id
+            JOIN ticketing.venta v  ON v.usuario_id = u.id
+            JOIN ticketing.entrada en ON en.venta_id = v.id
+            GROUP BY u.id, u.mail
+            ORDER BY COUNT(en.id) DESC
+            """);
     }
 
     public List<Map<String, Object>> getAuditoriaFuncionarios() {
-        return jdbcTemplate.queryForList("SELECT * FROM ticketing.v_auditoria_funcionarios");
+        return jdbcTemplate.queryForList("""
+            SELECT f.usuario_id                           AS "funcionarioId",
+                   u.mail                                 AS "mail",
+                   COUNT(DISTINCT fs.sector_id)           AS "sectoresAsignados",
+                   COUNT(vt.entrada_id)                   AS "validacionesRealizadas"
+            FROM ticketing.funcionario f
+            JOIN ticketing.usuario u ON u.id = f.usuario_id
+            LEFT JOIN ticketing.funcionario_sector fs ON fs.funcionario_id = f.usuario_id
+            LEFT JOIN ticketing.validacion_ternaria vt ON vt.funcionario_id = f.usuario_id
+            GROUP BY f.usuario_id, u.mail
+            ORDER BY COUNT(vt.entrada_id) DESC
+            """);
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────

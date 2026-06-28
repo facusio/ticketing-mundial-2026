@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class ValidacionResponse {
+    private boolean valida;
     private String mensaje;
     private Long entradaId;
     private PropietarioDto propietario;

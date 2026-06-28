@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { AlertCircle, Eye, EyeOff, Lock, Mail } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -9,42 +9,22 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { LoadingBall } from '@/components/loading-ball'
 
-/* Forma angular deportiva — esquinas derechas cortadas en diagonal */
 const CLIP = 'polygon(0 0, calc(100% - 40px) 0, 100% 40px, 100% calc(100% - 40px), calc(100% - 40px) 100%, 0 100%)'
 
-export default function LoginPage() {
-  const router = useRouter()
-  const [mail, setMail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+function LoginError() {
+  const searchParams = useSearchParams()
+  if (searchParams.get('error') !== '1') return null
+  return (
+    <div className="flex items-start gap-2.5 rounded-lg bg-red-500/15 border border-red-400/25 px-4 py-3 text-sm text-red-300">
+      <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+      <span>Credenciales incorrectas</span>
+    </div>
+  )
+}
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mail, password }),
-      })
-      if (!res.ok) {
-        const data = await res.json()
-        setError(data.message || 'Credenciales incorrectas')
-        return
-      }
-      const data = (await res.json()) as { rol: string }
-      if (data.rol === 'ADMIN_PAIS') window.location.href = '/admin'
-      else if (data.rol === 'FUNCIONARIO') window.location.href = '/validar'
-      else window.location.href = '/dashboard'
-    } catch {
-      setError('Error de conexión. Verificá que el servidor esté activo.')
-    } finally {
-      setLoading(false)
-    }
-  }
+export default function LoginPage() {
+  const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   return (
     <div
@@ -113,7 +93,7 @@ export default function LoginPage() {
               <div className="flex-1 h-px bg-white/10" />
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form method="POST" action="/api/auth/login-redirect" className="space-y-5" onSubmit={() => setLoading(true)}>
               {/* Email */}
               <div className="space-y-2">
                 <Label className="text-white/50 text-xs font-semibold tracking-widest uppercase">
@@ -123,10 +103,9 @@ export default function LoginPage() {
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/25 pointer-events-none" />
                   <Input
                     id="mail"
+                    name="mail"
                     type="email"
                     placeholder="tu@email.com"
-                    value={mail}
-                    onChange={(e) => setMail(e.target.value)}
                     required
                     autoComplete="email"
                     className="pl-10 py-3 bg-white/5 border-white/15 text-white placeholder:text-white/20 focus:ring-0 focus:border-[#0066b2]"
@@ -143,10 +122,9 @@ export default function LoginPage() {
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/25 pointer-events-none" />
                   <Input
                     id="password"
+                    name="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
                     required
                     autoComplete="current-password"
                     className="pl-10 pr-10 py-3 bg-white/5 border-white/15 text-white placeholder:text-white/20 focus:ring-0 focus:border-[#0066b2]"
@@ -154,8 +132,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 z-10 text-white/30 hover:text-white/70 transition-colors"
-                    tabIndex={-1}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 z-10 text-white/30 hover:text-white/70 transition-colors p-2"
                     aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -164,12 +141,9 @@ export default function LoginPage() {
               </div>
 
               {/* Error */}
-              {error && (
-                <div className="flex items-start gap-2.5 rounded-lg bg-red-500/15 border border-red-400/25 px-4 py-3 text-sm text-red-300">
-                  <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  <span>{error}</span>
-                </div>
-              )}
+              <Suspense>
+                <LoginError />
+              </Suspense>
 
               <Button type="submit" className="w-full py-3 bg-[#0066b2] hover:bg-[#0052a3] active:bg-[#003d7a] focus-visible:ring-[#0066b2]" size="lg" loading={loading}>
                 {!loading && 'Ingresar'}

@@ -189,7 +189,7 @@ export interface JwtPayload {
   exp: number
 }
 
-export type Rol = 'USUARIO_GENERAL' | 'ADMIN_PAIS' | 'FUNCIONARIO'
+export type Rol = 'USUARIO_GENERAL' | 'ADMIN_PAIS' | 'FUNCIONARIO' | 'SUPERADMIN'
 export type EstadoEntrada = 'ACTIVA' | 'TRANSFERIDA' | 'CONSUMIDA'
 export type EstadoVenta = 'PENDIENTE' | 'COMPLETADA' | 'CANCELADA'
 export type EstadoTransferencia = 'PENDIENTE' | 'ACEPTADA' | 'RECHAZADA'

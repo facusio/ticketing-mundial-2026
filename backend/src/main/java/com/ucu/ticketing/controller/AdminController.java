@@ -3,6 +3,7 @@ package com.ucu.ticketing.controller;
 import com.ucu.ticketing.dto.request.*;
 import com.ucu.ticketing.dto.response.EstadioResponse;
 import com.ucu.ticketing.dto.response.EventoResponse;
+import com.ucu.ticketing.dto.response.SectorResponse;
 import com.ucu.ticketing.model.Fase;
 import com.ucu.ticketing.service.AdminService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,6 +38,12 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getEstadios(adminId(auth)));
     }
 
+    @GetMapping("/estadios/{id}/sectores")
+    @Operation(summary = "Listar sectores de un estadio")
+    public ResponseEntity<List<SectorResponse>> getSectores(@PathVariable Long id) {
+        return ResponseEntity.ok(adminService.getSectoresByEstadio(id));
+    }
+
     @PostMapping("/estadios/{id}/sectores")
     @Operation(summary = "Crear sector en un estadio")
     public ResponseEntity<Void> crearSector(@PathVariable Long id,
@@ -65,6 +72,12 @@ public class AdminController {
                                                     Authentication auth) {
         adminService.asignarFuncionarioASector(adminId(auth), sectorId, funcionarioId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/fases")
+    @Operation(summary = "Listar fases del torneo")
+    public ResponseEntity<List<Fase>> getFases() {
+        return ResponseEntity.ok(adminService.getFases());
     }
 
     @PostMapping("/fases")

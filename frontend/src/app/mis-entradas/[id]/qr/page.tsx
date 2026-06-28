@@ -1,58 +1,40 @@
-'use client'
-
-import { use, useState, useEffect, useCallback } from 'react'
+import { cookies } from 'next/headers'
 import Link from 'next/link'
+import { ChevronLeft, CheckCircle2, PartyPopper } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
-import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
-import { api } from '@/lib/api'
+import QrCountdown from './countdown'
 import type { QrResponse } from '@/lib/types'
-import { ChevronLeft, RefreshCw, Clock } from 'lucide-react'
 
-const QR_TTL = 30
+export const dynamic = 'force-dynamic'
 
-export default function QrPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params)
-  const [qr, setQr] = useState<QrResponse | null>(null)
-  const [secondsLeft, setSecondsLeft] = useState(QR_TTL)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+export default async function QrPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const token = (await cookies()).get('token')?.value ?? ''
 
-  const fetchQr = useCallback(async () => {
-    setLoading(true)
-    setError('')
-    try {
-      const data = await api.get<QrResponse>(`/api/usuario/entradas/${id}/qr`)
-      setQr(data)
-      setSecondsLeft(QR_TTL)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al obtener el QR')
-    } finally {
-      setLoading(false)
+  let qr: QrResponse | null = null
+  let error = ''
+  let consumed = false
+
+  try {
+    const res = await fetch(`http://localhost:8080/api/usuario/entradas/${id}/qr`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store',
+    })
+    if (res.ok) {
+      qr = await res.json()
+    } else {
+      const body = await res.json().catch(() => null)
+      const msg: string = body?.message ?? ''
+      if (res.status === 409 && msg.toLowerCase().includes('consumida')) {
+        consumed = true
+      } else {
+        error = msg || `Error ${res.status}`
+      }
     }
-  }, [id])
-
-  // Initial fetch
-  useEffect(() => {
-    fetchQr()
-  }, [fetchQr])
-
-  // Countdown + auto-refresh
-  useEffect(() => {
-    if (!qr) return
-    const interval = setInterval(() => {
-      setSecondsLeft((s) => {
-        if (s <= 1) {
-          fetchQr()
-          return QR_TTL
-        }
-        return s - 1
-      })
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [qr, fetchQr])
-
-  const progress = (secondsLeft / QR_TTL) * 100
+  } catch {
+    error = 'No se pudo conectar con el servidor'
+  }
 
   return (
     <div className="fixed inset-0 bg-slate-950 flex flex-col items-center justify-center">
@@ -64,56 +46,63 @@ export default function QrPage({ params }: { params: Promise<{ id: string }> }) 
       </Link>
 
       <div className="w-full max-w-sm px-6 text-center">
-        <h1 className="text-xl font-bold text-white mb-1">QR de entrada</h1>
-        <p className="text-slate-400 text-sm mb-8">Mostrá este código al funcionario en la puerta</p>
-
-        {error ? (
-          <div className="space-y-4">
-            <div className="rounded-xl bg-red-500/10 border border-red-500/30 px-6 py-8">
-              <p className="text-red-400 mb-4">{error}</p>
-            </div>
-            <Button onClick={fetchQr} variant="outline">
-              <RefreshCw className="h-4 w-4" /> Reintentar
-            </Button>
-          </div>
-        ) : loading && !qr ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-10 w-10 border-2 border-[#0066b2] border-t-transparent" />
-          </div>
-        ) : qr ? (
+        {consumed ? (
           <div className="space-y-6">
-            {/* QR Code */}
-            <div className="inline-block p-5 bg-white rounded-2xl shadow-2xl shadow-[#0066b2]/20">
-              <QRCodeSVG
-                value={qr.codigo}
-                size={220}
-                level="H"
-                includeMargin={false}
-              />
-            </div>
-
-            {/* Countdown */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-center gap-2 text-sm">
-                <Clock className="h-4 w-4 text-[#4da3e8]" />
-                <span className={`font-mono font-bold text-lg ${secondsLeft <= 5 ? 'text-red-400' : 'text-[#4da3e8]'}`}>
-                  {secondsLeft}s
-                </span>
-                <span className="text-slate-400">hasta regenerar</span>
+            <div className="flex flex-col items-center gap-4">
+              <div className="relative">
+                <div className="absolute inset-0 rounded-full bg-green-500/20 blur-2xl scale-150" />
+                <div className="relative rounded-full bg-green-500/15 border-2 border-green-500/40 p-6">
+                  <CheckCircle2 className="h-16 w-16 text-green-400" />
+                </div>
               </div>
-              <Progress
-                value={progress}
-                indicatorClassName={secondsLeft <= 5 ? 'bg-red-500' : 'bg-[#0066b2]'}
-              />
-              <p className="text-xs text-slate-500">El código se regenera automáticamente cada 30 segundos</p>
+              <PartyPopper className="h-8 w-8 text-yellow-400 absolute" style={{ marginTop: '-2rem', marginLeft: '3rem' }} />
             </div>
 
-            <Button onClick={fetchQr} variant="ghost" size="sm" disabled={loading}>
-              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-              Actualizar ahora
-            </Button>
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold text-white">¡Entrada validada!</h1>
+              <p className="text-green-400 text-lg font-semibold">Tu acceso fue confirmado</p>
+              <p className="text-slate-300 mt-4 text-base leading-relaxed">
+                Un funcionario escaneó tu QR correctamente.
+              </p>
+              <p className="text-2xl font-bold text-white mt-2">¡Disfrutá el partido!</p>
+            </div>
+
+            <div className="rounded-2xl bg-green-500/10 border border-green-500/30 px-6 py-4">
+              <p className="text-green-300 text-sm">
+                Esta entrada ya no puede ser reutilizada
+              </p>
+            </div>
+
+            <Link href="/mis-entradas">
+              <Button variant="outline" className="w-full border-slate-600 text-slate-300 hover:bg-slate-800">
+                Ver mis entradas
+              </Button>
+            </Link>
           </div>
-        ) : null}
+        ) : (
+          <>
+            <h1 className="text-xl font-bold text-white mb-1">QR de entrada</h1>
+            <p className="text-slate-400 text-sm mb-8">Mostrá este código al funcionario en la puerta</p>
+
+            {error ? (
+              <div className="space-y-4">
+                <div className="rounded-xl bg-red-500/10 border border-red-500/30 px-6 py-8">
+                  <p className="text-red-400 mb-4">{error}</p>
+                </div>
+                <Link href={`/mis-entradas/${id}/qr`}>
+                  <Button variant="outline">Reintentar</Button>
+                </Link>
+              </div>
+            ) : qr ? (
+              <div className="space-y-6">
+                <div className="inline-block p-5 bg-white rounded-2xl shadow-2xl shadow-[#0066b2]/20">
+                  <QRCodeSVG value={qr.codigo} size={220} level="H" includeMargin={false} />
+                </div>
+                <QrCountdown expiraEn={qr.expiraEn} entradaId={id} />
+              </div>
+            ) : null}
+          </>
+        )}
       </div>
     </div>
   )

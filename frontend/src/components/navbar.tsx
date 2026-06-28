@@ -22,6 +22,9 @@ const NAV_LINKS: Record<Rol, { href: string; label: string }[]> = {
     { href: '/validar', label: 'Escanear QR' },
     { href: '/validar/historial', label: 'Historial' },
   ],
+  SUPERADMIN: [
+    { href: '/superadmin', label: 'Panel' },
+  ],
 }
 
 export async function Navbar() {
@@ -39,6 +42,7 @@ export async function Navbar() {
     USUARIO_GENERAL: 'Hincha',
     ADMIN_PAIS: 'Admin País',
     FUNCIONARIO: 'Funcionario',
+    SUPERADMIN: 'Super Admin',
   }
 
   return (

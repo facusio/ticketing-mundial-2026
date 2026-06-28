@@ -1,9 +1,14 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { Scanner } from '@yudiel/react-qr-scanner'
 import { Card, CardContent } from '@/components/ui/card'
+
+const Scanner = dynamic(
+  () => import('@yudiel/react-qr-scanner').then((m) => m.Scanner),
+  { ssr: false, loading: () => <div className="aspect-square bg-black rounded-2xl flex items-center justify-center"><div className="animate-spin rounded-full h-10 w-10 border-2 border-[#0066b2] border-t-transparent" /></div> },
+)
 import { Button } from '@/components/ui/button'
 import { api } from '@/lib/api'
 import { CheckCircle, XCircle, Camera, CameraOff, History } from 'lucide-react'
