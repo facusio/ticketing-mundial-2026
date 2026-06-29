@@ -83,10 +83,12 @@ Swagger UI: `http://localhost:8080/swagger-ui.html`
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev:webpack
 ```
 
 La app queda disponible en `http://localhost:3000`.
+
+> Usá `dev:webpack` en lugar de `dev`. La versión con Turbopack (el default) tiene un bug que rompe la compilación en esta versión de Next.js.
 
 > El backend debe estar corriendo antes de usar el frontend.
 
@@ -121,20 +123,51 @@ Todos los usuarios del `seed.sql` usan la misma contraseña: **`test1234`**
 
 ---
 
-## Compartir con el teléfono u otra persona
+## Acceso desde el teléfono / escaneo de QR
 
-Para acceder desde un celular o compartir la app sin necesidad de estar en la misma red WiFi, usá localtunnel:
+La cámara del celular requiere HTTPS. Para exponer la app con HTTPS usá **cloudflared** (Cloudflare Tunnel) — es gratis, estable y no requiere cuenta.
+
+### Instalación (una sola vez)
 
 ```bash
-# Con el frontend ya corriendo en localhost:3000:
-npx localtunnel --port 3000 --subdomain ticketing-mundial-2026
+# macOS
+brew install cloudflare/cloudflare/cloudflared
+
+# Windows
+winget install --id Cloudflare.cloudflared
+
+# Linux
+curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o cloudflared
+chmod +x cloudflared && sudo mv cloudflared /usr/local/bin/
 ```
 
-Esto genera la URL fija: **https://ticketing-mundial-2026.loca.lt**
+### Levantar el túnel
 
-La primera vez que se abre en el navegador, localtunnel muestra una página de advertencia — hay que hacer clic en "Click to continue" para pasar.
+Con el frontend **ya corriendo** en `localhost:3000`:
 
-> El túnel solo funciona mientras el frontend y el backend estén corriendo en tu máquina.
+```bash
+cloudflared tunnel --url http://localhost:3000 --no-autoupdate
+```
+
+El comando imprime una URL del tipo:
+
+```
+https://alguna-palabra-aleatoria.trycloudflare.com
+```
+
+Abrí esa URL en el celular — ya tiene HTTPS, la cámara va a funcionar directamente.
+
+> La URL cambia cada vez que reiniciás el túnel. El túnel solo funciona mientras el frontend y el backend estén corriendo en tu máquina.
+
+### Para mejor rendimiento en el celular (opcional)
+
+En lugar de `dev:webpack`, podés correr la build de producción — carga más rápido a través del túnel:
+
+```bash
+cd frontend
+npm run build   # una sola vez, tarda ~1-2 min
+npm start       # levanta el servidor de producción
+```
 
 ---
 
