@@ -82,12 +82,38 @@ export default function ValidarPage() {
   }
 
   function handleError(err: unknown) {
-    const message = err instanceof Error ? err.message : String(err)
-    if (message.includes('Permission') || message.includes('NotAllowed')) {
-      setCameraError('Acceso a la cámara denegado. Habilitalo en la configuración del navegador.')
-    } else {
-      setCameraError(`Error de cámara: ${message}`)
+    let message = 'Error desconocido'
+    if (err && typeof err === 'object' && 'kind' in err) {
+      const scanErr = err as { kind: string; message: string }
+      if (scanErr.kind === 'permission-denied') {
+        setCameraError('Acceso a la cámara denegado. Habilitalo en Configuración > Safari/Chrome > Cámara.')
+        setScanning(false)
+        setState('idle')
+        return
+      }
+      if (scanErr.kind === 'insecure-context') {
+        setCameraError('La cámara requiere HTTPS. Verificá que estés usando el link seguro.')
+        setScanning(false)
+        setState('idle')
+        return
+      }
+      if (scanErr.kind === 'overconstrained') {
+        setCameraError('No se pudo acceder a la cámara trasera. Intentá recargar la página.')
+        setScanning(false)
+        setState('idle')
+        return
+      }
+      message = scanErr.message || scanErr.kind
+    } else if (err instanceof Error) {
+      message = err.message
+      if (message.includes('Permission') || message.includes('NotAllowed')) {
+        setCameraError('Acceso a la cámara denegado. Habilitalo en la configuración del navegador.')
+        setScanning(false)
+        setState('idle')
+        return
+      }
     }
+    setCameraError(`Error de cámara: ${message}`)
     setScanning(false)
     setState('idle')
   }
@@ -208,7 +234,7 @@ export default function ValidarPage() {
             <Scanner
               onScan={handleScan}
               onError={handleError}
-              constraints={{ facingMode: 'environment' }}
+              constraints={{ facingMode: { ideal: 'environment' } }}
               formats={['qr_code']}
             />
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">

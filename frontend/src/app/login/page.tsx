@@ -131,8 +131,9 @@ export default function LoginPage() {
                   />
                   <button
                     type="button"
+                    onPointerDown={(e) => e.preventDefault()}
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 z-10 text-white/30 hover:text-white/70 transition-colors p-2"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 z-10 text-white/30 hover:text-white/70 transition-colors p-2 touch-manipulation"
                     aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
