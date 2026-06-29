@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { api } from '@/lib/api'
 import { formatDate, formatCurrency } from '@/lib/utils'
 import type { Entrada, Transferencia } from '@/lib/types'
-import { ArrowRightLeft, Check, X, Send } from 'lucide-react'
+import { ArrowRightLeft, Check, X, Send, ChevronLeft } from 'lucide-react'
 import { LoadingBall } from '@/components/loading-ball'
 
 export default function TransferirPage() {
@@ -81,6 +82,9 @@ export default function TransferirPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <div>
+        <Link href="/dashboard" className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-900 mb-4 transition-colors">
+          <ChevronLeft className="h-4 w-4" /> Inicio
+        </Link>
         <h1 className="text-3xl font-bold text-slate-800 mb-1">Transferencias</h1>
         <p className="text-slate-600">Transferí entradas a otros usuarios o gestioná las que recibiste</p>
       </div>
@@ -107,7 +111,7 @@ export default function TransferirPage() {
           <CardContent className="space-y-3 pt-0">
             {recibidas.map((t) => (
               <div key={t.id} className="p-4 rounded-lg bg-amber-500/5 border border-amber-500/20">
-                <div className="flex items-start justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                   <div>
                     <p className="font-semibold text-slate-800">
                       {t.evento.equipoLocal} vs {t.evento.equipoVisitante}
@@ -117,11 +121,11 @@ export default function TransferirPage() {
                     </p>
                     <p className="text-xs text-slate-500 mt-1">{formatDate(t.fechaHora)}</p>
                   </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={() => handleAction(t.id, 'aceptar')}>
+                  <div className="flex gap-2 shrink-0">
+                    <Button size="sm" onClick={() => handleAction(t.id, 'aceptar')} className="flex-1 sm:flex-none">
                       <Check className="h-4 w-4" /> Aceptar
                     </Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleAction(t.id, 'rechazar')}>
+                    <Button size="sm" variant="destructive" onClick={() => handleAction(t.id, 'rechazar')} className="flex-1 sm:flex-none">
                       <X className="h-4 w-4" /> Rechazar
                     </Button>
                   </div>

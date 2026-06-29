@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { formatDate } from '@/lib/utils'
 import type { Evento } from '@/lib/types'
-import { MapPin, Calendar, ChevronRight } from 'lucide-react'
+import { MapPin, Calendar, ChevronRight, ChevronLeft } from 'lucide-react'
 
 export default async function EventosPage() {
   const cookieStore = await cookies()
@@ -20,6 +20,10 @@ export default async function EventosPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <Link href="/dashboard" className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-900 mb-6 transition-colors">
+        <ChevronLeft className="h-4 w-4" /> Inicio
+      </Link>
+
       <h1 className="text-3xl font-bold text-slate-800 mb-2">Eventos disponibles</h1>
       <p className="text-slate-600 mb-8">Seleccioná un partido para ver precios y comprar entradas</p>
 
@@ -31,20 +35,22 @@ export default async function EventosPage() {
       ) : (
         <div className="rounded-xl border border-slate-200 bg-white divide-y divide-slate-100 overflow-hidden">
           {eventos.map((ev) => (
-            <Link key={ev.id} href={`/eventos/${ev.id}`} className="flex items-center gap-4 px-5 py-4 hover:bg-slate-50 transition-colors group">
-              <Badge variant="blue" className="shrink-0 whitespace-nowrap">{ev.fase.nombre}</Badge>
-              <span className="font-semibold text-slate-800 min-w-0 flex-1 truncate">
+            <Link key={ev.id} href={`/eventos/${ev.id}`} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 px-5 py-4 hover:bg-slate-50 transition-colors group">
+              <Badge variant="blue" className="shrink-0 whitespace-nowrap w-fit">{ev.fase.nombre}</Badge>
+              <span className="font-semibold text-slate-800 min-w-0 sm:flex-1">
                 {ev.equipoLocal} <span className="text-slate-400 font-normal">vs</span> {ev.equipoVisitante}
               </span>
-              <div className="hidden md:flex items-center gap-1.5 text-sm text-slate-400 shrink-0">
-                <MapPin className="h-3.5 w-3.5 text-[#0066b2]" />
-                {ev.estadio.nombre} — {ev.estadio.ciudad}
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm text-slate-400">
+                <span className="flex items-center gap-1">
+                  <MapPin className="h-3.5 w-3.5 text-[#0066b2]" />
+                  {ev.estadio.nombre} — {ev.estadio.ciudad}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Calendar className="h-3.5 w-3.5 text-[#0066b2]" />
+                  {formatDate(ev.fechaHora)}
+                </span>
               </div>
-              <div className="flex items-center gap-1.5 text-sm text-slate-400 shrink-0">
-                <Calendar className="h-3.5 w-3.5 text-[#0066b2]" />
-                {formatDate(ev.fechaHora)}
-              </div>
-              <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-[#0066b2] transition-colors shrink-0" />
+              <ChevronRight className="hidden sm:block h-4 w-4 text-slate-300 group-hover:text-[#0066b2] transition-colors shrink-0" />
             </Link>
           ))}
         </div>

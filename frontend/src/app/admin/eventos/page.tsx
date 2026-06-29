@@ -73,7 +73,7 @@ export default function AdminEventosPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-slate-800">Eventos</h1>
           <p className="text-slate-600 mt-1">Partidos del Mundial 2026</p>
@@ -148,28 +148,41 @@ export default function AdminEventosPage() {
           ) : eventos.length === 0 ? (
             <p className="text-slate-400 text-sm py-4">No hay eventos registrados.</p>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Partido</TableHead>
-                  <TableHead>Estadio</TableHead>
-                  <TableHead>Fase</TableHead>
-                  <TableHead>Fecha</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <>
+              {/* Tabla en desktop */}
+              <div className="hidden sm:block overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Partido</TableHead>
+                      <TableHead>Estadio</TableHead>
+                      <TableHead>Fase</TableHead>
+                      <TableHead>Fecha</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {eventos.map((ev) => (
+                      <TableRow key={ev.id}>
+                        <TableCell className="font-medium">{ev.equipoLocal} vs {ev.equipoVisitante}</TableCell>
+                        <TableCell className="text-slate-400">{ev.estadio.nombre}</TableCell>
+                        <TableCell className="text-slate-400">{ev.fase.nombre}</TableCell>
+                        <TableCell className="text-slate-400">{formatDate(ev.fechaHora)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              {/* Cards en mobile */}
+              <div className="sm:hidden divide-y divide-slate-100">
                 {eventos.map((ev) => (
-                  <TableRow key={ev.id}>
-                    <TableCell className="font-medium">
-                      {ev.equipoLocal} vs {ev.equipoVisitante}
-                    </TableCell>
-                    <TableCell className="text-slate-400">{ev.estadio.nombre}</TableCell>
-                    <TableCell className="text-slate-400">{ev.fase.nombre}</TableCell>
-                    <TableCell className="text-slate-400">{formatDate(ev.fechaHora)}</TableCell>
-                  </TableRow>
+                  <div key={ev.id} className="py-3 space-y-1">
+                    <p className="font-medium text-slate-800 text-sm">{ev.equipoLocal} vs {ev.equipoVisitante}</p>
+                    <p className="text-xs text-slate-400">{ev.estadio.nombre} · {ev.fase.nombre}</p>
+                    <p className="text-xs text-slate-500">{formatDate(ev.fechaHora)}</p>
+                  </div>
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

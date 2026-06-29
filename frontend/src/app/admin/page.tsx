@@ -15,19 +15,19 @@ export default function AdminPage() {
       <h1 className="text-3xl font-bold text-slate-800 mb-2">Panel de Administración</h1>
       <p className="text-slate-600 mb-10">Mundial 2026 · Gestión de tu país</p>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         {CARDS.map(({ href, icon: Icon, title, desc, color }) => (
           <Link key={href} href={href}>
             <Card className="hover:border-[#0066b2]/50 hover:bg-blue-50 transition-all cursor-pointer group h-full">
-              <CardContent className="p-10 flex flex-col gap-6">
-                <div className={`p-4 rounded-xl bg-slate-100 w-fit ${color}`}>
-                  <Icon className="h-10 w-10" />
+              <CardContent className="p-6 sm:p-10 flex flex-col gap-4 sm:gap-6">
+                <div className={`p-3 sm:p-4 rounded-xl bg-slate-100 w-fit ${color}`}>
+                  <Icon className="h-8 w-8 sm:h-10 sm:w-10" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-800 group-hover:text-[#0066b2] transition-colors">
+                  <h3 className="text-lg sm:text-xl font-semibold text-slate-800 group-hover:text-[#0066b2] transition-colors">
                     {title}
                   </h3>
-                  <p className="text-sm text-slate-500 mt-2">{desc}</p>
+                  <p className="text-sm text-slate-500 mt-1 sm:mt-2">{desc}</p>
                 </div>
               </CardContent>
             </Card>

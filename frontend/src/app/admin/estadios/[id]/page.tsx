@@ -67,7 +67,7 @@ export default function EstadioDetallePage({ params }: { params: Promise<{ id: s
         <ChevronLeft className="h-4 w-4" /> Estadios
       </Link>
 
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-slate-800">{estadio?.nombre ?? 'Estadio'}</h1>
           {estadio && (

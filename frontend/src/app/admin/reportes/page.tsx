@@ -81,15 +81,15 @@ export default function ReportesPage() {
       <p className="text-slate-600 mb-8">Análisis y métricas del torneo</p>
 
       <Tabs defaultValue="eventos">
-        <TabsList>
-          <TabsTrigger value="eventos">
-            <BarChart3 className="h-4 w-4 mr-2" /> Eventos
+        <TabsList className="w-full sm:w-auto">
+          <TabsTrigger value="eventos" className="flex-1 sm:flex-none">
+            <BarChart3 className="h-4 w-4 mr-1 sm:mr-2" /> <span className="text-xs sm:text-sm">Eventos</span>
           </TabsTrigger>
-          <TabsTrigger value="compradores">
-            <Users className="h-4 w-4 mr-2" /> Compradores
+          <TabsTrigger value="compradores" className="flex-1 sm:flex-none">
+            <Users className="h-4 w-4 mr-1 sm:mr-2" /> <span className="text-xs sm:text-sm">Compradores</span>
           </TabsTrigger>
-          <TabsTrigger value="funcionarios">
-            <Shield className="h-4 w-4 mr-2" /> Funcionarios
+          <TabsTrigger value="funcionarios" className="flex-1 sm:flex-none">
+            <Shield className="h-4 w-4 mr-1 sm:mr-2" /> <span className="text-xs sm:text-sm">Funcionarios</span>
           </TabsTrigger>
         </TabsList>
 
@@ -129,28 +129,30 @@ export default function ReportesPage() {
                 {eventos.length === 0 ? (
                   <p className="text-slate-400 text-sm py-4">No hay datos disponibles.</p>
                 ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>#</TableHead>
-                        <TableHead>Partido</TableHead>
-                        <TableHead>Estadio</TableHead>
-                        <TableHead>Entradas</TableHead>
-                        <TableHead>Recaudación</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {eventos.map((ev, i) => (
-                        <TableRow key={ev.eventoId}>
-                          <TableCell className="text-amber-400 font-bold">{i + 1}</TableCell>
-                          <TableCell className="font-medium">{ev.equipoLocal} vs {ev.equipoVisitante}</TableCell>
-                          <TableCell className="text-slate-400">{ev.estadioNombre}</TableCell>
-                          <TableCell className="text-[#0066b2] font-semibold">{ev.totalEntradas}</TableCell>
-                          <TableCell>{formatCurrency(ev.montoTotal)}</TableCell>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>#</TableHead>
+                          <TableHead>Partido</TableHead>
+                          <TableHead className="hidden sm:table-cell">Estadio</TableHead>
+                          <TableHead>Entradas</TableHead>
+                          <TableHead>Recaudación</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {eventos.map((ev, i) => (
+                          <TableRow key={ev.eventoId}>
+                            <TableCell className="text-amber-400 font-bold">{i + 1}</TableCell>
+                            <TableCell className="font-medium text-sm">{ev.equipoLocal} vs {ev.equipoVisitante}</TableCell>
+                            <TableCell className="hidden sm:table-cell text-slate-400">{ev.estadioNombre}</TableCell>
+                            <TableCell className="text-[#0066b2] font-semibold">{ev.totalEntradas}</TableCell>
+                            <TableCell className="text-sm">{formatCurrency(ev.montoTotal)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 )}
               </CardContent>
             </Card>
@@ -164,26 +166,28 @@ export default function ReportesPage() {
               {compradores.length === 0 ? (
                 <p className="text-slate-400 text-sm py-4">No hay datos disponibles.</p>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>#</TableHead>
-                      <TableHead>Usuario</TableHead>
-                      <TableHead>Entradas</TableHead>
-                      <TableHead>Total gastado</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {compradores.map((c, i) => (
-                      <TableRow key={c.usuarioId}>
-                        <TableCell className="text-amber-400 font-bold">{i + 1}</TableCell>
-                        <TableCell>{c.mail}</TableCell>
-                        <TableCell className="text-[#0066b2] font-semibold">{c.totalEntradas}</TableCell>
-                        <TableCell>{formatCurrency(c.montoTotal)}</TableCell>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>#</TableHead>
+                        <TableHead>Usuario</TableHead>
+                        <TableHead>Entradas</TableHead>
+                        <TableHead>Total gastado</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {compradores.map((c, i) => (
+                        <TableRow key={c.usuarioId}>
+                          <TableCell className="text-amber-400 font-bold">{i + 1}</TableCell>
+                          <TableCell className="text-sm break-all">{c.mail}</TableCell>
+                          <TableCell className="text-[#0066b2] font-semibold">{c.totalEntradas}</TableCell>
+                          <TableCell className="text-sm">{formatCurrency(c.montoTotal)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -196,24 +200,26 @@ export default function ReportesPage() {
               {funcionarios.length === 0 ? (
                 <p className="text-slate-400 text-sm py-4">No hay datos disponibles.</p>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Funcionario</TableHead>
-                      <TableHead>Sectores asignados</TableHead>
-                      <TableHead>Validaciones realizadas</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {funcionarios.map((f) => (
-                      <TableRow key={f.funcionarioId}>
-                        <TableCell>{f.mail}</TableCell>
-                        <TableCell className="text-blue-400">{f.sectoresAsignados}</TableCell>
-                        <TableCell className="text-[#0066b2] font-semibold">{f.validacionesRealizadas}</TableCell>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Funcionario</TableHead>
+                        <TableHead>Sectores</TableHead>
+                        <TableHead>Validaciones</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {funcionarios.map((f) => (
+                        <TableRow key={f.funcionarioId}>
+                          <TableCell className="text-sm break-all">{f.mail}</TableCell>
+                          <TableCell className="text-blue-400">{f.sectoresAsignados}</TableCell>
+                          <TableCell className="text-[#0066b2] font-semibold">{f.validacionesRealizadas}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               )}
             </CardContent>
           </Card>

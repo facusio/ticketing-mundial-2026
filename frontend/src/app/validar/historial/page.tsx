@@ -58,41 +58,65 @@ export default async function HistorialPage() {
             <CardTitle>Registro de validaciones</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Fecha y hora</TableHead>
-                  <TableHead>Partido</TableHead>
-                  <TableHead>Sector</TableHead>
-                  <TableHead>Propietario</TableHead>
-                  <TableHead>Resultado</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {validaciones.map((v, i) => (
-                  <TableRow key={v.entradaId ?? i}>
-                    <TableCell className="text-sm">{formatDate(v.fechaValidacion)}</TableCell>
-                    <TableCell className="text-sm font-medium text-white">
+            {/* Tabla en desktop */}
+            <div className="hidden sm:block overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Fecha y hora</TableHead>
+                    <TableHead>Partido</TableHead>
+                    <TableHead>Sector</TableHead>
+                    <TableHead>Propietario</TableHead>
+                    <TableHead>Resultado</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {validaciones.map((v, i) => (
+                    <TableRow key={v.entradaId ?? i}>
+                      <TableCell className="text-sm">{formatDate(v.fechaValidacion)}</TableCell>
+                      <TableCell className="text-sm font-medium text-white">
+                        {v.evento
+                          ? `${v.evento.equipoLocal} vs ${v.evento.equipoVisitante}`
+                          : `Entrada #${v.entradaId}`}
+                      </TableCell>
+                      <TableCell className="text-sm text-green-400">
+                        {v.sector ? `${v.sector.codigo} — ${v.sector.estadioNombre}` : '—'}
+                      </TableCell>
+                      <TableCell className="text-sm text-slate-400">
+                        {v.propietario?.mail ?? '—'}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-400" />
+                          <Badge variant="green">VÁLIDA</Badge>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            {/* Cards en mobile */}
+            <div className="sm:hidden space-y-3">
+              {validaciones.map((v, i) => (
+                <div key={v.entradaId ?? i} className="rounded-lg border border-slate-200 p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium text-sm text-white">
                       {v.evento
                         ? `${v.evento.equipoLocal} vs ${v.evento.equipoVisitante}`
                         : `Entrada #${v.entradaId}`}
-                    </TableCell>
-                    <TableCell className="text-sm text-green-400">
-                      {v.sector ? `${v.sector.codigo} — ${v.sector.estadioNombre}` : '—'}
-                    </TableCell>
-                    <TableCell className="text-sm text-slate-400">
-                      {v.propietario?.mail ?? '—'}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-400" />
-                        <Badge variant="green">VÁLIDA</Badge>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                    </p>
+                    <div className="flex items-center gap-1">
+                      <CheckCircle className="h-4 w-4 text-green-400" />
+                      <Badge variant="green">VÁLIDA</Badge>
+                    </div>
+                  </div>
+                  <p className="text-xs text-green-400">{v.sector ? `${v.sector.codigo} — ${v.sector.estadioNombre}` : '—'}</p>
+                  <p className="text-xs text-slate-400">{v.propietario?.mail ?? '—'}</p>
+                  <p className="text-xs text-slate-500">{formatDate(v.fechaValidacion)}</p>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       )}

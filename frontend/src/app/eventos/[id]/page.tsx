@@ -202,7 +202,7 @@ export default function EventoDetallePage({
           )}
         </CardContent>
         {totalEntradas > 0 && (
-          <CardFooter className="flex items-center justify-between">
+          <CardFooter className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="text-sm text-slate-400">Total</p>
               <p className="text-xl font-bold text-slate-800">
@@ -210,9 +210,9 @@ export default function EventoDetallePage({
                 <span className="text-xs text-slate-500 font-normal">(+5% comisión)</span>
               </p>
             </div>
-            <div className="flex flex-col items-end gap-2">
+            <div className="flex flex-col items-end gap-2 w-full sm:w-auto">
               {error && <p className="text-sm text-red-400">{error}</p>}
-              <Button onClick={handleComprar} loading={comprandoEvento} size="lg" variant="gold">
+              <Button onClick={handleComprar} loading={comprandoEvento} size="lg" variant="gold" className="w-full sm:w-auto">
                 <ShoppingCart className="h-4 w-4" />
                 Comprar {totalEntradas} entrada{totalEntradas > 1 ? 's' : ''}
               </Button>

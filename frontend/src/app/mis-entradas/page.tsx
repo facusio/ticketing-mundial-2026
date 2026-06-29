@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatDate, formatCurrency } from '@/lib/utils'
 import type { Entrada, EstadoEntrada } from '@/lib/types'
-import { QrCode, ArrowRightLeft, MapPin, Calendar } from 'lucide-react'
+import { QrCode, ArrowRightLeft, MapPin, Calendar, ChevronLeft } from 'lucide-react'
 
 const badgeVariant: Record<EstadoEntrada, 'blue' | 'gold' | 'gray'> = {
   ACTIVA: 'blue',
@@ -39,6 +39,10 @@ export default async function MisEntradasPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
+      <Link href="/dashboard" className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-900 mb-6 transition-colors">
+        <ChevronLeft className="h-4 w-4" /> Inicio
+      </Link>
+
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-slate-800">Mis Entradas</h1>
@@ -46,7 +50,7 @@ export default async function MisEntradasPage() {
         </div>
         <Link href="/transferir">
           <Button variant="outline">
-            <ArrowRightLeft className="h-4 w-4" /> Transferencias
+            <ArrowRightLeft className="h-4 w-4" /> <span className="hidden sm:inline">Transferencias</span>
           </Button>
         </Link>
       </div>
@@ -94,13 +98,13 @@ function EntradaRow({ entrada, hoverColor }: { entrada: Entrada; hoverColor: str
   const isActiva = entrada.estado === 'ACTIVA'
 
   return (
-    <div className={`flex items-center gap-4 px-5 py-4 transition-colors ${isActiva ? `hover:bg-slate-50 ${hoverColor}` : ''}`}>
-      {/* Partido */}
+    <div className={`flex items-center gap-3 px-4 sm:px-5 py-4 transition-colors ${isActiva ? `hover:bg-slate-50 ${hoverColor}` : ''}`}>
+      {/* Partido + detalles */}
       <div className="flex-1 min-w-0">
-        <p className="font-semibold text-slate-800 truncate">
+        <p className="font-semibold text-slate-800 text-sm sm:text-base leading-tight">
           {entrada.evento.equipoLocal} <span className="text-slate-400 font-normal">vs</span> {entrada.evento.equipoVisitante}
         </p>
-        <div className="flex items-center gap-3 mt-1 text-xs text-slate-400">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1 text-xs text-slate-400">
           <span className="flex items-center gap-1">
             <MapPin className="h-3 w-3 text-[#0066b2]" />{entrada.evento.estadioNombre}
           </span>
@@ -108,29 +112,23 @@ function EntradaRow({ entrada, hoverColor }: { entrada: Entrada; hoverColor: str
             <Calendar className="h-3 w-3 text-[#0066b2]" />{formatDate(entrada.evento.fechaHora)}
           </span>
         </div>
+        <div className="flex items-center gap-3 mt-1 text-xs">
+          <span className="text-slate-400">
+            Sector <span className="text-[#0066b2] font-medium">{entrada.sector.codigo}</span>
+          </span>
+          <span className="font-semibold text-slate-600">{formatCurrency(entrada.precio)}</span>
+          {entrada.transferenciasRealizadas > 0 && (
+            <span className="text-amber-500">{entrada.transferenciasRealizadas}/3 transf.</span>
+          )}
+        </div>
       </div>
-
-      {/* Sector + precio */}
-      <div className="hidden sm:flex items-center gap-4 text-sm shrink-0">
-        <span className="text-slate-400">
-          Sector <span className="text-[#0066b2] font-medium">{entrada.sector.codigo}</span>
-        </span>
-        <span className="font-semibold text-slate-700">{formatCurrency(entrada.precio)}</span>
-      </div>
-
-      {/* Transferencias realizadas */}
-      {entrada.transferenciasRealizadas > 0 && (
-        <span className="hidden md:inline text-xs text-amber-500 shrink-0">
-          {entrada.transferenciasRealizadas}/3 transf.
-        </span>
-      )}
 
       {/* Badge o botón QR */}
       <div className="shrink-0">
         {isActiva ? (
           <Link href={`/mis-entradas/${entrada.id}/qr`}>
             <Button size="sm">
-              <QrCode className="h-4 w-4" /> Ver QR
+              <QrCode className="h-4 w-4" /> <span className="hidden sm:inline">Ver QR</span>
             </Button>
           </Link>
         ) : (

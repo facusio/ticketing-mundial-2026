@@ -28,15 +28,14 @@ export default function LoginPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center relative"
+      className="min-h-screen flex relative"
       style={{ backgroundImage: "url('/bg-login.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
     >
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/55" />
 
-      {/* Tagline izquierda — absoluta, solo desktop */}
-      <div className="absolute left-0 top-0 bottom-0 hidden lg:flex flex-col justify-center px-16 w-[38%] z-10 pointer-events-none">
-        {/* Bloque FIFA estilo logo */}
+      {/* Tagline izquierda — solo desktop */}
+      <div className="hidden lg:flex flex-col justify-center px-16 w-[42%] relative z-10 pointer-events-none shrink-0">
         <div className="inline-flex flex-col items-start">
           <div className="bg-[#0066b2] px-4 py-1 mb-1">
             <p className="font-display text-white select-none leading-none tracking-widest" style={{ fontSize: '5rem' }}>
@@ -56,20 +55,21 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* Card — zona oscura derecha del balón */}
-      <div className="relative z-10 py-12 px-6 lg:translate-x-[90%]">
-
+      {/* Card — centrada en mobile, a la derecha en desktop */}
+      <div className="flex-1 flex items-center justify-center relative z-10 p-4 sm:p-8">
         {/* Borde exterior (1 px degradado) */}
         <div
           style={{
             clipPath: CLIP,
             background: 'linear-gradient(145deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.04) 100%)',
             padding: '1px',
+            width: '100%',
+            maxWidth: '480px',
           }}
         >
           {/* Card interior */}
           <div
-            className="w-full sm:w-[480px] px-12 py-16 min-h-[720px] flex flex-col justify-between"
+            className="w-full px-6 sm:px-12 py-10 sm:py-16 flex flex-col gap-6"
             style={{
               clipPath: CLIP,
               background: 'rgba(6, 10, 24, 0.52)',
@@ -86,7 +86,7 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {/* Separador decorativo verde */}
+            {/* Separador decorativo */}
             <div className="flex items-center gap-2">
               <div className="flex-1 h-px bg-white/10" />
               <div className="w-8 h-0.5 bg-[#0066b2]" />

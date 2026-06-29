@@ -27,13 +27,17 @@ interface ValidacionResult {
 }
 
 function getOrCreateDeviceUid(): string {
-  const key = 'mundial_device_uid'
-  let uid = localStorage.getItem(key)
-  if (!uid) {
-    uid = crypto.randomUUID()
-    localStorage.setItem(key, uid)
+  try {
+    const key = 'mundial_device_uid'
+    let uid = localStorage.getItem(key)
+    if (!uid) {
+      uid = (crypto.randomUUID?.() ?? Math.random().toString(36).slice(2) + Date.now().toString(36))
+      localStorage.setItem(key, uid)
+    }
+    return uid
+  } catch {
+    return Math.random().toString(36).slice(2) + Date.now().toString(36)
   }
-  return uid
 }
 
 async function ensureDeviceRegistered(uid: string) {
@@ -54,8 +58,10 @@ export default function ValidarPage() {
   const deviceUidRef = useRef('')
 
   useEffect(() => {
-    deviceUidRef.current = getOrCreateDeviceUid()
-    ensureDeviceRegistered(deviceUidRef.current)
+    try {
+      deviceUidRef.current = getOrCreateDeviceUid()
+      ensureDeviceRegistered(deviceUidRef.current)
+    } catch { /* ignore device registration errors */ }
   }, [])
 
   async function handleScan(codes: { rawValue: string }[]) {

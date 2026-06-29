@@ -175,7 +175,7 @@ export default function RegisterPage() {
 
             {step === 1 && (
               <>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="paisDoc">País del documento</Label>
                     <Input id="paisDoc" value={form.paisDoc} onChange={(e) => set('paisDoc', e.target.value)} placeholder="Argentina" />
@@ -190,7 +190,7 @@ export default function RegisterPage() {
                   <Input id="numeroDoc" value={form.numeroDoc} onChange={(e) => set('numeroDoc', e.target.value)} placeholder="12345678" />
                 </div>
                 <hr className="border-slate-200" />
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="paisDir">País de residencia</Label>
                     <Input id="paisDir" value={form.paisDir} onChange={(e) => set('paisDir', e.target.value)} placeholder="Argentina" />
@@ -200,7 +200,7 @@ export default function RegisterPage() {
                     <Input id="localidad" value={form.localidad} onChange={(e) => set('localidad', e.target.value)} placeholder="Buenos Aires" />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="calle">Calle</Label>
                     <Input id="calle" value={form.calle} onChange={(e) => set('calle', e.target.value)} placeholder="Av. Corrientes" />
@@ -252,9 +252,9 @@ export default function RegisterPage() {
                   ['Código postal', form.codigoPostal],
                   ['Teléfonos', form.telefonos.join(', ')],
                 ].map(([label, value]) => (
-                  <div key={label} className="flex justify-between text-sm">
-                    <span className="text-slate-400">{label}</span>
-                    <span className="text-slate-700 font-medium">{value}</span>
+                  <div key={label} className="text-sm">
+                    <span className="text-slate-400 block">{label}</span>
+                    <span className="text-slate-700 font-medium break-all">{value}</span>
                   </div>
                 ))}
               </div>

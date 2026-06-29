@@ -95,7 +95,7 @@ export default function FasesPage() {
 
       {/* Fases */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-wrap flex-row items-center justify-between gap-3">
           <CardTitle className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-amber-400" /> Fases del torneo
           </CardTitle>
@@ -150,7 +150,7 @@ export default function FasesPage() {
 
       {/* Precios */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-wrap flex-row items-center justify-between gap-3">
           <CardTitle className="flex items-center gap-2">
             <DollarSign className="h-5 w-5 text-[#0066b2]" /> Definir precio por sector-fase
           </CardTitle>

@@ -2,6 +2,7 @@ import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { decodeJwt } from '@/lib/utils'
 import { LogoutButton } from './logout-button'
+import { MobileNavMenu } from './mobile-nav-menu'
 import type { Rol } from '@/lib/types'
 
 const NAV_LINKS: Record<Rol, { href: string; label: string }[]> = {
@@ -70,10 +71,11 @@ export async function Navbar() {
             </nav>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <span className="hidden sm:inline-flex items-center rounded-full bg-[#0066b2]/10 border border-[#0066b2]/30 px-3 py-1 text-xs font-semibold text-[#0066b2]">
               {rolLabel[rol]}
             </span>
+            <MobileNavMenu links={links} />
             <LogoutButton />
           </div>
         </div>
