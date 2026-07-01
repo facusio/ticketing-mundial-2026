@@ -43,16 +43,6 @@ public class EntradaRepository {
             new EntradaRicaRowMapper(), usuarioId);
     }
 
-    public long countEntradasActivasByUsuarioYEvento(Long usuarioId, Long eventoId) {
-        String sql = """
-            SELECT COUNT(*) FROM ticketing.entrada e
-            JOIN ticketing.venta v ON v.id = e.venta_id
-            WHERE v.usuario_id = ? AND e.evento_id = ? AND e.estado != 'CONSUMIDA'
-            """;
-        Long count = jdbc.queryForObject(sql, Long.class, usuarioId, eventoId);
-        return count != null ? count : 0L;
-    }
-
     public Long insert(Long ventaId, Long eventoId, Long sectorId, Long propietarioActualId,
                        BigDecimal precio, String estado, short transferenciasRealizadas) {
         String sql = """
@@ -86,8 +76,10 @@ public class EntradaRepository {
     }
 
     public void confirmarTransferencia(Long id, Long nuevoPropietarioId) {
+        // El contador transferencias_realizadas ya lo incrementa el trigger
+        // trg_aplicar_transferencia (T7) al aceptar la transferencia; no volver a sumarlo acá.
         jdbc.update(
-            "UPDATE ticketing.entrada SET propietario_actual_id = ?, estado = 'ACTIVA', transferencias_realizadas = transferencias_realizadas + 1 WHERE id = ?",
+            "UPDATE ticketing.entrada SET propietario_actual_id = ?, estado = 'ACTIVA' WHERE id = ?",
             nuevoPropietarioId, id);
     }
 }

@@ -104,11 +104,6 @@ public class UsuarioService {
             throw new ReglaNegocioException("No se pueden comprar más de 5 entradas por transacción");
         }
 
-        long entradasExistentes = entradaRepository.countEntradasActivasByUsuarioYEvento(usuarioId, req.getEventoId());
-        if (entradasExistentes + totalEntradas > 5) {
-            throw new ReglaNegocioException("Superarías el límite de 5 entradas por evento");
-        }
-
         BigDecimal subtotal = BigDecimal.ZERO;
         List<VentaResponse.EntradaResumenDto> resumenPrevio = new ArrayList<>();
 

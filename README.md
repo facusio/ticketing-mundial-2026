@@ -185,7 +185,7 @@ npm start       # levanta el servidor de producción
 ## Funcionalidades principales
 
 - Registro y login con JWT (expiración 24 hs)
-- Compra de entradas con límite de 5 por usuario por evento
+- Compra de entradas con límite de 5 por transacción de compra (sin tope acumulado por evento; se pueden hacer varias compras)
 - QR dinámico por entrada con expiración de 30 segundos
 - Notificación automática al usuario cuando su entrada es validada
 - Transferencia de entradas entre usuarios (máx. 3 transferencias por entrada)
