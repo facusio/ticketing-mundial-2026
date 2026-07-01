@@ -159,13 +159,13 @@ WHERE e.nombre = 'Estadio Centenario'
   );
 
 -- =============================================================================
--- ASIGNAR FUNCIONARIO A LOS TRES SECTORES
+-- ASIGNAR FUNCIONARIO AL SECTOR PALCO
 -- =============================================================================
 INSERT INTO funcionario_sector (funcionario_id, sector_id)
 SELECT fu.usuario_id, s.id
 FROM funcionario fu
 JOIN usuario u ON u.id = fu.usuario_id AND u.mail = 'funcionario@mundial2026.com'
-CROSS JOIN sector s
+JOIN sector s ON s.codigo = 'PALCO'
 JOIN estadio e ON e.id = s.estadio_id AND e.nombre = 'Estadio Centenario'
 ON CONFLICT DO NOTHING;
 

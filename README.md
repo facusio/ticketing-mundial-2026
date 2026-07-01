@@ -118,7 +118,7 @@ Todos los usuarios del `seed.sql` usan la misma contraseña: **`test1234`**
   - Argentina vs Brasil (Fase de Grupos, en 7 días)
   - Uruguay vs Colombia (Fase de Grupos, en 10 días)
   - Argentina vs Uruguay (Octavos de Final, en 20 días)
-- **Funcionario** asignado a los sectores NORTE y SUR del Centenario
+- **Funcionario** asignado únicamente al sector PALCO del Centenario
 - **2 usuarios generales** con entradas ya compradas para enriquecer los reportes
 
 ---

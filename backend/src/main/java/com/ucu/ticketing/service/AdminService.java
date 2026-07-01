@@ -175,6 +175,35 @@ public class AdminService {
         funcionarioSectorRepository.insert(funcionarioId, sectorId);
     }
 
+    public List<Map<String, Object>> getFuncionarios() {
+        return funcionarioRepository.findAllConMail();
+    }
+
+    public List<Map<String, Object>> getFuncionariosBySector(Long sectorId) {
+        sectorRepository.findById(sectorId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Sector no encontrado"));
+        return funcionarioSectorRepository.getFuncionariosBySector(sectorId);
+    }
+
+    @Transactional
+    public void desasignarFuncionarioDeSector(Long adminId, Long sectorId, Long funcionarioId) {
+        Sector sector = sectorRepository.findById(sectorId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Sector no encontrado"));
+
+        Estadio estadio = estadioRepository.findById(sector.getEstadioId())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Estadio no encontrado"));
+
+        if (!estadio.getAdminId().equals(adminId)) {
+            throw new ReglaNegocioException("Este sector no pertenece a tus estadios");
+        }
+
+        if (!funcionarioSectorRepository.existsByFuncionarioIdAndSectorId(funcionarioId, sectorId)) {
+            throw new ReglaNegocioException("El funcionario no está asignado a ese sector");
+        }
+
+        funcionarioSectorRepository.delete(funcionarioId, sectorId);
+    }
+
     public List<Map<String, Object>> getRankingEventos() {
         return jdbcTemplate.queryForList("""
             SELECT ev.id                       AS "eventoId",

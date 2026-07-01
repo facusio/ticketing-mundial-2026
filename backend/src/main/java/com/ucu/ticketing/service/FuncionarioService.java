@@ -64,7 +64,9 @@ public class FuncionarioService {
 
         // 4. Verificar que el sector esté asignado al funcionario
         if (!funcionarioSectorRepository.existsByFuncionarioIdAndSectorId(funcionarioId, entrada.getSectorId())) {
-            throw new AccesoDenegadoException("No estás habilitado para validar entradas de este sector");
+            throw new AccesoDenegadoException(
+                    "Esta entrada es del sector " + entrada.getSector().getCodigo() +
+                            ". Indicale al asistente que ingrese por la puerta correspondiente a ese sector.");
         }
 
         // 5. Verificar que la entrada no esté ya consumida

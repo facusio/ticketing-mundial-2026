@@ -146,6 +146,12 @@ export interface SectorAdmin {
   capacidadMaxima: number
 }
 
+export interface FuncionarioAdmin {
+  id: number
+  mail: string
+  numeroLegajo: string
+}
+
 export interface FaseConPrecios {
   id: number
   nombre: string

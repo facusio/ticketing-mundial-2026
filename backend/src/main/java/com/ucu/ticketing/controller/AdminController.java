@@ -74,6 +74,27 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @DeleteMapping("/sectores/{sectorId}/funcionarios/{funcionarioId}")
+    @Operation(summary = "Quitar la asignación de un funcionario a un sector")
+    public ResponseEntity<Void> desasignarFuncionario(@PathVariable Long sectorId,
+                                                       @PathVariable Long funcionarioId,
+                                                       Authentication auth) {
+        adminService.desasignarFuncionarioDeSector(adminId(auth), sectorId, funcionarioId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/funcionarios")
+    @Operation(summary = "Listar funcionarios del sistema")
+    public ResponseEntity<List<Map<String, Object>>> getFuncionarios() {
+        return ResponseEntity.ok(adminService.getFuncionarios());
+    }
+
+    @GetMapping("/sectores/{sectorId}/funcionarios")
+    @Operation(summary = "Listar funcionarios asignados a un sector")
+    public ResponseEntity<List<Map<String, Object>>> getFuncionariosBySector(@PathVariable Long sectorId) {
+        return ResponseEntity.ok(adminService.getFuncionariosBySector(sectorId));
+    }
+
     @GetMapping("/fases")
     @Operation(summary = "Listar fases del torneo")
     public ResponseEntity<List<Fase>> getFases() {

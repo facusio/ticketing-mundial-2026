@@ -6,16 +6,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { api } from '@/lib/api'
-import type { EstadioAdmin, SectorAdmin } from '@/lib/types'
-import { ChevronLeft, Plus, Layers } from 'lucide-react'
+import type { EstadioAdmin, SectorAdmin, FuncionarioAdmin } from '@/lib/types'
+import { ChevronLeft, Plus, Layers, X } from 'lucide-react'
 
 export default function EstadioDetallePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const [estadios, setEstadios] = useState<EstadioAdmin[]>([])
   const [sectores, setSectores] = useState<SectorAdmin[]>([])
+  const [funcionarios, setFuncionarios] = useState<FuncionarioAdmin[]>([])
+  const [asignaciones, setAsignaciones] = useState<Record<number, FuncionarioAdmin[]>>({})
+  const [seleccionado, setSeleccionado] = useState<Record<number, string>>({})
+  const [asignarError, setAsignarError] = useState<Record<number, string>>({})
   const [loading, setLoading] = useState(true)
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState({ codigo: '', capacidadMaxima: '' })
@@ -27,17 +33,62 @@ export default function EstadioDetallePage({ params }: { params: Promise<{ id: s
   const reload = useCallback(async () => {
     setLoading(true)
     try {
-      const [ests, secs] = await Promise.all([
+      const [ests, secs, funcs] = await Promise.all([
         api.get<EstadioAdmin[]>('/api/admin/estadios'),
         api.get<SectorAdmin[]>(`/api/admin/estadios/${id}/sectores`).catch(() => []),
+        api.get<FuncionarioAdmin[]>('/api/admin/funcionarios').catch(() => []),
       ])
       setEstadios(ests)
       setSectores(secs)
+      setFuncionarios(funcs)
+
+      const asignadosPorSector = await Promise.all(
+        secs.map((s) =>
+          api.get<FuncionarioAdmin[]>(`/api/admin/sectores/${s.id}/funcionarios`).catch(() => []),
+        ),
+      )
+      setAsignaciones(
+        Object.fromEntries(secs.map((s, i) => [s.id, asignadosPorSector[i]])),
+      )
     } catch { /* ignore */ }
     finally { setLoading(false) }
   }, [id])
 
   useEffect(() => { reload() }, [reload])
+
+  function funcionariosDisponibles(sectorId: number) {
+    const asignadosIds = new Set((asignaciones[sectorId] ?? []).map((f) => f.id))
+    return funcionarios.filter((f) => !asignadosIds.has(f.id))
+  }
+
+  async function handleAssign(sectorId: number) {
+    const funcionarioId = seleccionado[sectorId]
+    if (!funcionarioId) return
+    setAsignarError((e) => ({ ...e, [sectorId]: '' }))
+    try {
+      await api.post(`/api/admin/sectores/${sectorId}/funcionarios/${funcionarioId}`)
+      setSeleccionado((sel) => ({ ...sel, [sectorId]: '' }))
+      reload()
+    } catch (err) {
+      setAsignarError((e) => ({
+        ...e,
+        [sectorId]: err instanceof Error ? err.message : 'Error al asignar funcionario',
+      }))
+    }
+  }
+
+  async function handleUnassign(sectorId: number, funcionarioId: number) {
+    setAsignarError((e) => ({ ...e, [sectorId]: '' }))
+    try {
+      await api.delete(`/api/admin/sectores/${sectorId}/funcionarios/${funcionarioId}`)
+      reload()
+    } catch (err) {
+      setAsignarError((e) => ({
+        ...e,
+        [sectorId]: err instanceof Error ? err.message : 'Error al quitar funcionario',
+      }))
+    }
+  }
 
   async function handleCreate() {
     if (!form.codigo || !form.capacidadMaxima) {
@@ -133,6 +184,7 @@ export default function EstadioDetallePage({ params }: { params: Promise<{ id: s
                 <TableRow>
                   <TableHead>Código</TableHead>
                   <TableHead>Capacidad máxima</TableHead>
+                  <TableHead>Funcionarios asignados</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -140,6 +192,55 @@ export default function EstadioDetallePage({ params }: { params: Promise<{ id: s
                   <TableRow key={s.id}>
                     <TableCell className="font-medium text-[#0066b2]">{s.codigo}</TableCell>
                     <TableCell>{s.capacidadMaxima.toLocaleString()}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-2 min-w-[220px]">
+                        <div className="flex flex-wrap gap-1">
+                          {(asignaciones[s.id] ?? []).length === 0 ? (
+                            <span className="text-xs text-slate-400">Sin funcionarios asignados</span>
+                          ) : (
+                            (asignaciones[s.id] ?? []).map((f) => (
+                              <Badge key={f.id} variant="blue" className="gap-1">
+                                {f.mail}
+                                <button
+                                  type="button"
+                                  onClick={() => handleUnassign(s.id, f.id)}
+                                  aria-label={`Quitar ${f.mail}`}
+                                  className="hover:text-red-400"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </Badge>
+                            ))
+                          )}
+                        </div>
+                        <div className="flex gap-2">
+                          <Select
+                            value={seleccionado[s.id] ?? ''}
+                            onValueChange={(v) => setSeleccionado((sel) => ({ ...sel, [s.id]: v }))}
+                          >
+                            <SelectTrigger className="h-8 text-xs">
+                              <SelectValue placeholder="Agregar funcionario" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {funcionariosDisponibles(s.id).map((f) => (
+                                <SelectItem key={f.id} value={String(f.id)}>{f.mail}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={!seleccionado[s.id]}
+                            onClick={() => handleAssign(s.id)}
+                          >
+                            Asignar
+                          </Button>
+                        </div>
+                        {asignarError[s.id] && (
+                          <p className="text-xs text-red-400">{asignarError[s.id]}</p>
+                        )}
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

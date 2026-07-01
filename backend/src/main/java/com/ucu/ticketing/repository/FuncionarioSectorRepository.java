@@ -37,4 +37,22 @@ public class FuncionarioSectorRepository {
             "INSERT INTO ticketing.funcionario_sector (funcionario_id, sector_id) VALUES (?, ?)",
             funcionarioId, sectorId);
     }
+
+    public List<Map<String, Object>> getFuncionariosBySector(Long sectorId) {
+        String sql = """
+            SELECT u.id AS "id", u.mail AS "mail", f.numero_legajo AS "numeroLegajo"
+            FROM ticketing.funcionario_sector fs
+            JOIN ticketing.funcionario f ON f.usuario_id = fs.funcionario_id
+            JOIN ticketing.usuario u ON u.id = f.usuario_id
+            WHERE fs.sector_id = ?
+            ORDER BY u.mail
+            """;
+        return jdbc.queryForList(sql, sectorId);
+    }
+
+    public void delete(Long funcionarioId, Long sectorId) {
+        jdbc.update(
+            "DELETE FROM ticketing.funcionario_sector WHERE funcionario_id = ? AND sector_id = ?",
+            funcionarioId, sectorId);
+    }
 }
